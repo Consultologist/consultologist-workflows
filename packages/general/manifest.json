@@ -1,6 +1,6 @@
 {
 	"name": "general",
-	"version": "v2026.07.9",
+	"version": "v2026.07.10",
 	"specVersion": 7,
 	"derivedFrom": null,
 	"templating": { "engine": "scriban", "engineVersion": "7.2.5" },
@@ -33,7 +33,9 @@
 		{ "id": "section-instructions", "file": "prompts/section-instructions.md",
 		  "variables": ["patient_section_draft", "section_name", "section_standard"] }
 	],
-	"result": "node:assemble-note",
+	"results": [
+		{ "id": "consult", "node": "node:assemble-note", "label": "Consultation note" }
+	],
 	"nodes": [
 		{ "id": "extract-patient-concepts",
 		  "label": "Extracting clinical concepts",
