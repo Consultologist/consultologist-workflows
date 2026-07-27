@@ -1,11 +1,12 @@
 {
-	"name": "general",
-	"version": "v2026.07.9",
+	"name": "example-two-documents",
+	"version": "v2026.07.1",
 	"specVersion": 7,
-	"derivedFrom": null,
+	"derivedFrom": "general@v2026.07.9",
 	"templating": { "engine": "scriban", "engineVersion": "7.2.5" },
 	"inputs": [
-		{ "id": "consult_draft", "label": "Consult draft", "required": true }
+		{ "id": "consult_draft", "label": "Consult draft", "required": true },
+		{ "id": "prior_notes", "label": "Prior notes", "required": false }
 	],
 	"preludes": {
 		"snomed-tool-guidance": "prompts/_snomed-tool-guidance.md"
@@ -31,9 +32,14 @@
 		{ "id": "patient-section-draft", "file": "prompts/patient-section-draft.md",
 		  "variables": ["standard_section_draft", "consult_draft", "section_name"] },
 		{ "id": "section-instructions", "file": "prompts/section-instructions.md",
-		  "variables": ["patient_section_draft", "section_name", "section_standard"] }
+		  "variables": ["patient_section_draft", "section_name", "section_standard"] },
+		{ "id": "draft-patient-letter", "file": "prompts/draft-patient-letter.md",
+		  "variables": ["section_summaries", "patient_trajectory_concepts", "prior_notes"] }
 	],
-	"result": "node:assemble-note",
+	"results": [
+		{ "id": "consult_note", "node": "node:assemble-note", "label": "Consultation note" },
+		{ "id": "patient_letter", "node": "node:assemble-letter", "label": "Patient letter" }
+	],
 	"nodes": [
 		{ "id": "extract-patient-concepts",
 		  "label": "Extracting clinical concepts",
@@ -87,6 +93,21 @@
 
 		{ "id": "assemble-note",
 		  "label": "Assembling note",
-		  "aggregate": ["node:section-instructions"] }
+		  "aggregate": ["node:section-instructions"] },
+
+		{ "id": "agg-sections",
+		  "label": "Collecting sections for the letter",
+		  "aggregate": ["node:section-instructions"] },
+
+		{ "id": "draft-patient-letter",
+		  "label": "Writing the patient letter",
+		  "prompt": "draft-patient-letter",
+		  "bindings": { "section_summaries": "node:agg-sections",
+		                "patient_trajectory_concepts": { "from": "node:create-patient-trajectory", "as": "concept-context" },
+		                "prior_notes": "input:prior_notes" } },
+
+		{ "id": "assemble-letter",
+		  "label": "Assembling letter",
+		  "aggregate": ["node:draft-patient-letter"] }
 	]
 }
