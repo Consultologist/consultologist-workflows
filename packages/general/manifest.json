@@ -1,9 +1,12 @@
 {
 	"name": "general",
-	"version": "v2026.07.8",
-	"specVersion": 6,
+	"version": "v2026.07.9",
+	"specVersion": 7,
 	"derivedFrom": null,
 	"templating": { "engine": "scriban", "engineVersion": "7.2.5" },
+	"inputs": [
+		{ "id": "consult_draft", "label": "Consult draft", "required": true }
+	],
 	"preludes": {
 		"snomed-tool-guidance": "prompts/_snomed-tool-guidance.md"
 	},
