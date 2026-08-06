@@ -4,6 +4,17 @@ on:
   push:
     tags:
       - "*-v*"
+  # A tag push is the normal trigger. This is the manual one, for when the
+  # push event never arrives — GitHub dropped tag webhooks during the
+  # 2026-08-06 Actions incident, and a tag ref already exists so re-pushing
+  # it does not re-trigger. Publishing is CI-only (the registry's write role
+  # is on the OIDC principal, not on any human), so without this the only
+  # recovery is deleting and re-pushing the tag.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to publish, e.g. example-two-documents-v2026.08.1"
+        required: true
 
 permissions:
   id-token: write
@@ -15,11 +26,21 @@ jobs:
     environment: registry
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # On a tag push this is already the tag; on a dispatch the default
+          # would be the branch, and the package would be published from
+          # whatever main happens to hold rather than from the tagged state.
+          ref: ${{ inputs.tag || github.ref }}
       - name: Resolve package from tag
         id: pkg
+        env:
+          TAG: ${{ inputs.tag || github.ref_name }}
         run: |
           set -euo pipefail
-          TAG="${GITHUB_REF_NAME}"
+          case "$TAG" in
+            *-v*) ;;
+            *) echo "'$TAG' is not a release tag: expected <package>-v<version>, e.g. example-two-documents-v2026.08.1" >&2; exit 1 ;;
+          esac
           NAME="${TAG%-v*}"
           VERSION="v${TAG##*-v}"
           MANIFEST_VERSION=$(python3 -c "import json; print(json.load(open('packages/$NAME/manifest.json'))['version'])")
