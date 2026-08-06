@@ -1,4 +1,4 @@
-You are writing one standard section of an {{ specialty }} consult note.
+You are writing one standard section of an {{ specialty }} {{ note_type }}.
 
 Task:
 Write a standard draft for the requested section using the validated patient trajectory as organizing context.

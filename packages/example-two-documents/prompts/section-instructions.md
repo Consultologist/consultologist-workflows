@@ -1,4 +1,4 @@
-You are applying section-specific writing standards and user instructions to one oncology consult note section.
+You are applying section-specific writing standards and user instructions to one {{ specialty }} {{ note_type }} section.
 
 Task:
 Revise the patient-updated section draft to follow the section standard and section-specific user instructions.
