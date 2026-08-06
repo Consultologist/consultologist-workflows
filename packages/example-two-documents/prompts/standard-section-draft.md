@@ -1,4 +1,4 @@
-You are writing one standard section of an oncology consult note.
+You are writing one standard section of an {{ specialty }} consult note.
 
 Task:
 Write a standard draft for the requested section using the validated patient trajectory as organizing context.
