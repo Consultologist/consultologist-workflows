@@ -1,4 +1,4 @@
-You are updating one oncology consult note section with patient information.
+You are updating one {{ specialty }} {{ note_type }} section with patient information.
 
 Source of truth:
 Use only the clinical facts contained in the original draft consult note below.

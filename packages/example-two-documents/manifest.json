@@ -1,6 +1,6 @@
 {
 	"name": "example-two-documents",
-	"version": "v2026.08.1",
+	"version": "v2026.08.2",
 	"specVersion": 7,
 	"derivedFrom": "general@v2026.07.9",
 	"templating": { "engine": "scriban", "engineVersion": "7.2.5" },
@@ -16,7 +16,8 @@
 	},
 	"data": {
 		"standards": "data/standards/",
-		"specialty": "data/specialty.txt"
+		"specialty": "data/specialty.txt",
+		"note_type": "data/note_type.txt"
 	},
 	"prompts": [
 		{ "id": "extract-patient-concepts", "file": "prompts/extract-patient-concepts.md",
@@ -29,11 +30,11 @@
 		  "variables": ["problem_concepts", "patient_concepts", "typical_trajectory_concepts"],
 		  "prelude": "snomed-tool-guidance" },
 		{ "id": "standard-section-draft", "file": "prompts/standard-section-draft.md",
-		  "variables": ["section_name", "patient_trajectory_concepts", "specialty"] },
+		  "variables": ["section_name", "patient_trajectory_concepts", "specialty", "note_type"] },
 		{ "id": "patient-section-draft", "file": "prompts/patient-section-draft.md",
-		  "variables": ["standard_section_draft", "consult_draft", "section_name"] },
+		  "variables": ["standard_section_draft", "consult_draft", "section_name", "specialty", "note_type"] },
 		{ "id": "section-instructions", "file": "prompts/section-instructions.md",
-		  "variables": ["patient_section_draft", "section_name", "section_standard"] },
+		  "variables": ["patient_section_draft", "section_name", "section_standard", "specialty", "note_type"] },
 		{ "id": "draft-patient-letter", "file": "prompts/draft-patient-letter.md",
 		  "variables": ["section_summaries", "patient_trajectory_concepts", "prior_notes"] }
 	],
@@ -77,21 +78,26 @@
 		  "prompt": "standard-section-draft",
 		  "bindings": { "section_name": "item:name",
 		                "patient_trajectory_concepts": { "from": "node:create-patient-trajectory", "as": "concept-context" },
-		                "specialty": "data:specialty" } },
+		                "specialty": "data:specialty",
+		                "note_type": "data:note_type" } },
 
 		{ "id": "patient-section-draft", "forEach": "data:standards",
 		  "label": "Applying patient information",
 		  "prompt": "patient-section-draft",
 		  "bindings": { "standard_section_draft": "node:standard-section-draft",
 		                "consult_draft": "input:consult_draft",
-		                "section_name": "item:name" } },
+		                "section_name": "item:name",
+		                "specialty": "data:specialty",
+		                "note_type": "data:note_type" } },
 
 		{ "id": "section-instructions", "forEach": "data:standards",
 		  "label": "Applying section instructions",
 		  "prompt": "section-instructions",
 		  "bindings": { "patient_section_draft": "node:patient-section-draft",
 		                "section_name": "item:name",
-		                "section_standard": "item:content" } },
+		                "section_standard": "item:content",
+		                "specialty": "data:specialty",
+		                "note_type": "data:note_type" } },
 
 		{ "id": "assemble-note",
 		  "label": "Assembling note",
