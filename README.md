@@ -10,6 +10,7 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
 |---|---|
 | `general` | The production consult workflow: one input, one assembled note. |
 | `example-two-documents` | A demonstration of what specVersion 7 opened — two declared inputs (one optional) and two deliverables. Not intended for clinical use. |
+| `example-conditional-documents` | A demonstration of what specVersion 8 opened — a typed date, an enum, a boolean, and two deliverables firing on different values of one *optional* enum, so leaving it unanswered produces nothing and the job is refused at start. Not intended for clinical use. |
 
 ## Contract
 
@@ -23,10 +24,25 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
   version-not-yet-published) before any publish. It does **not** read
   `specVersion`, traverse `nodes`, or check that bindings, results and
   declared inputs resolve — run a manifest through the app's validator
-  before tagging, since the registry accepts what CI here waves through.
+  before tagging, since the registry accepts what CI here waves through:
+
+  ```
+  dotnet run --file scripts/validate-workflow-package.cs -- <package-dir>
+  ```
+
+  from the app repo, which calls the same `WorkflowPackageValidator.Validate`
+  the registry runs on every publish.
 - `dag.mmd` is **derived** from `nodes` by the app's `WorkflowDagDiagram`
   and never authored by hand. Nothing regenerates or diffs it
-  automatically; regenerate it whenever nodes or bindings change.
+  automatically; regenerate it whenever nodes or bindings change:
+
+  ```
+  dotnet run --file scripts/validate-workflow-package.cs -- <package-dir> --dag > <package-dir>/dag.mmd
+  ```
+
+  Note the diagram is a projection of `nodes` alone: it does not read
+  `results`, so a conditional deliverable is drawn as an ordinary
+  aggregator, and an input only a condition reads does not appear at all.
 
 ## Publishing (CI-only)
 

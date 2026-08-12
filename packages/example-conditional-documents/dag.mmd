@@ -1,0 +1,22 @@
+flowchart TD
+    input_consult_draft(["input:consult_draft"])
+    input_seen_on(["input:seen_on"])
+    input_include_billing(["input:include_billing"])
+    data_sections(["data:sections"])
+
+    assemble_consult_note["assemble-consult-note<br/>Assembling the consultation note<br/>aggregate"]
+    consult_note_section -->|"aggregate"| assemble_consult_note
+    assemble_progress_note["assemble-progress-note<br/>Assembling the progress note<br/>aggregate"]
+    progress_note_section -->|"aggregate"| assemble_progress_note
+
+    data_sections -->|"forEach"| foreach_data_sections
+    subgraph foreach_data_sections["per data:sections item"]
+        consult_note_section["consult-note-section<br/>Drafting the consultation note<br/>item: name, content"]
+        progress_note_section["progress-note-section<br/>Drafting the progress note<br/>item: name, content"]
+    end
+    input_consult_draft -->|"consult_draft"| consult_note_section
+    input_seen_on -->|"seen_on"| consult_note_section
+    input_include_billing -->|"include_billing"| consult_note_section
+    input_consult_draft -->|"consult_draft"| progress_note_section
+    input_seen_on -->|"seen_on"| progress_note_section
+    input_include_billing -->|"include_billing"| progress_note_section

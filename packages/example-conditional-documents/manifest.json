@@ -1,0 +1,57 @@
+{
+	"name": "example-conditional-documents",
+	"version": "v2026.08.1",
+	"specVersion": 8,
+	"derivedFrom": null,
+	"templating": { "engine": "scriban", "engineVersion": "7.2.5" },
+	"inputs": [
+		{ "id": "consult_draft", "label": "Consult draft", "required": true },
+		{ "id": "seen_on", "label": "Date seen", "required": true, "type": "date" },
+		{ "id": "encounter_kind", "label": "Encounter kind", "required": false,
+		  "type": "enum", "values": ["new_patient", "follow_up"] },
+		{ "id": "include_billing", "label": "Include a billing sentence", "required": false,
+		  "type": "boolean" }
+	],
+	"data": {
+		"sections": "data/sections/"
+	},
+	"prompts": [
+		{ "id": "consult-note-section", "file": "prompts/consult-note-section.md",
+		  "variables": ["consult_draft", "section_name", "section_standard", "seen_on", "include_billing"] },
+		{ "id": "progress-note-section", "file": "prompts/progress-note-section.md",
+		  "variables": ["consult_draft", "section_name", "section_standard", "seen_on", "include_billing"] }
+	],
+	"results": [
+		{ "id": "consult_note", "node": "node:assemble-consult-note", "label": "Consultation note",
+		  "when": "encounter_kind == new_patient" },
+		{ "id": "progress_note", "node": "node:assemble-progress-note", "label": "Progress note",
+		  "when": "encounter_kind == follow_up" }
+	],
+	"nodes": [
+		{ "id": "consult-note-section", "forEach": "data:sections",
+		  "label": "Drafting the consultation note",
+		  "prompt": "consult-note-section",
+		  "bindings": { "consult_draft": "input:consult_draft",
+		                "section_name": "item:name",
+		                "section_standard": "item:content",
+		                "seen_on": "input:seen_on",
+		                "include_billing": "input:include_billing" } },
+
+		{ "id": "progress-note-section", "forEach": "data:sections",
+		  "label": "Drafting the progress note",
+		  "prompt": "progress-note-section",
+		  "bindings": { "consult_draft": "input:consult_draft",
+		                "section_name": "item:name",
+		                "section_standard": "item:content",
+		                "seen_on": "input:seen_on",
+		                "include_billing": "input:include_billing" } },
+
+		{ "id": "assemble-consult-note",
+		  "label": "Assembling the consultation note",
+		  "aggregate": ["node:consult-note-section"] },
+
+		{ "id": "assemble-progress-note",
+		  "label": "Assembling the progress note",
+		  "aggregate": ["node:progress-note-section"] }
+	]
+}
