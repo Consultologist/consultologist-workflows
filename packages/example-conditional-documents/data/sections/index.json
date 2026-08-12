@@ -1,0 +1,19 @@
+{
+  "fields": [
+    "id",
+    "name",
+    "content"
+  ],
+  "items": [
+    {
+      "id": "assessment",
+      "name": "Assessment",
+      "file": "assessment.md"
+    },
+    {
+      "id": "plan",
+      "name": "Plan",
+      "file": "plan.md"
+    }
+  ]
+}
