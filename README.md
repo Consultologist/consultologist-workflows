@@ -27,22 +27,22 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
   before tagging, since the registry accepts what CI here waves through:
 
   ```
-  dotnet run --file scripts/validate-workflow-package.cs -- <package-dir>
+  dotnet run -v q --file scripts/validate-workflow-package.cs -- <package-dir>
   ```
 
   from the app repo, which calls the same `WorkflowPackageValidator.Validate`
   the registry runs on every publish.
-- `dag.mmd` is **derived** from `nodes` by the app's `WorkflowDagDiagram`
-  and never authored by hand. Nothing regenerates or diffs it
-  automatically; regenerate it whenever nodes or bindings change:
+- `dag.mmd` is **derived** from `nodes` and `results` by the app's
+  `WorkflowDagDiagram` and never authored by hand. Nothing regenerates or
+  diffs it automatically; regenerate it whenever nodes, bindings,
+  deliverables or their conditions change:
 
   ```
-  dotnet run --file scripts/validate-workflow-package.cs -- <package-dir> --dag > <package-dir>/dag.mmd
+  dotnet run -v q --file scripts/validate-workflow-package.cs -- <package-dir> --dag > <package-dir>/dag.mmd
   ```
 
-  Note the diagram is a projection of `nodes` alone: it does not read
-  `results`, so a conditional deliverable is drawn as an ordinary
-  aggregator, and an input only a condition reads does not appear at all.
+  The `-v q` is load-bearing: MSBuild writes build warnings to stdout, so
+  a redirect without it captures them into the diagram.
 
 ## Publishing (CI-only)
 
