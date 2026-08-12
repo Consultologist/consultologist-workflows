@@ -25,3 +25,6 @@ flowchart TD
     end
     create_patient_trajectory -->|"patient_trajectory_concepts (as concept-context)"| standard_section_draft
     input_consult_draft -->|"consult_draft"| patient_section_draft
+
+    result_consult{{"consult<br/>Consultation note"}}
+    assemble_note --> result_consult

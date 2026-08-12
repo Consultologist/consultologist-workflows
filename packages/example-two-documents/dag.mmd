@@ -1,5 +1,7 @@
 flowchart TD
     input_consult_draft(["input:consult_draft"])
+    data_specialty(["data:specialty"])
+    data_note_type(["data:note_type"])
     data_standards(["data:standards"])
     input_prior_notes(["input:prior_notes"])
 
@@ -33,4 +35,15 @@ flowchart TD
         patient_section_draft -->|"patient_section_draft"| section_instructions
     end
     create_patient_trajectory -->|"patient_trajectory_concepts (as concept-context)"| standard_section_draft
+    data_specialty -->|"specialty"| standard_section_draft
+    data_note_type -->|"note_type"| standard_section_draft
     input_consult_draft -->|"consult_draft"| patient_section_draft
+    data_specialty -->|"specialty"| patient_section_draft
+    data_note_type -->|"note_type"| patient_section_draft
+    data_specialty -->|"specialty"| section_instructions
+    data_note_type -->|"note_type"| section_instructions
+
+    result_consult_note{{"consult_note<br/>Consultation note"}}
+    assemble_note --> result_consult_note
+    result_patient_letter{{"patient_letter<br/>Patient letter"}}
+    assemble_letter --> result_patient_letter
