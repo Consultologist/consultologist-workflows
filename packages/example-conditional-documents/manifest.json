@@ -23,7 +23,7 @@
 	],
 	"results": [
 		{ "id": "consult_note", "node": "node:assemble-consult-note", "label": "Consultation note",
-		  "when": "encounter_kind == new_patient" },
+		  "when": "encounter_kind == not_a_declared_value" },
 		{ "id": "progress_note", "node": "node:assemble-progress-note", "label": "Progress note",
 		  "when": "encounter_kind == follow_up" }
 	],
