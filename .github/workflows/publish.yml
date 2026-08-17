@@ -50,6 +50,27 @@ jobs:
           fi
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      # #185: the last gate before an IMMUTABLE publish. A package the engine
+      # refuses would otherwise reach the registry and fail later at pin resolve,
+      # reported as "registry unavailable" — and the remedy would be a new version
+      # number, never a fix. Placed before the Azure login so a bad package never
+      # gets as far as holding a registry credential.
+      #
+      # submodules: true is load-bearing — the output-contract catalog lives in
+      # the agents submodule, and the validator matches every declared package
+      # schema against it.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Consultologist/Consultologist-Blazor
+          submodules: true
+          path: engine
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: "10.0.x"
+      - name: Engine validation
+        env:
+          NAME: ${{ steps.pkg.outputs.name }}
+        run: ./scripts/validate-with-engine.sh engine "packages/$NAME"
       - name: Azure login (OIDC)
         uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0
         with:
