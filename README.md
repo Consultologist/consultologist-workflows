@@ -19,19 +19,34 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
 - Versions are CalVer (`vYYYY.MM.N`), declared in `manifest.json`, and
   **immutable once published** — the registry refuses re-publishing an
   existing version; `{name}/latest.json` is the only mutable pointer.
-- The app's server-side validator remains the authority for account forks;
-  CI here validates structure (manifest parse, CalVer, file closure,
-  version-not-yet-published) before any publish. It does **not** read
-  `specVersion`, traverse `nodes`, or check that bindings, results and
-  declared inputs resolve — run a manifest through the app's validator
-  before tagging, since the registry accepts what CI here waves through:
+- CI here runs **two** validations before any publish. The structural one
+  (manifest parse, CalVer, file closure, version-not-yet-published) is inline
+  in `validate.yml`. The **engine** one (#185) is
+  `scripts/validate-with-engine.sh`, which checks out the app repo with its
+  agents submodule and runs the same `WorkflowPackageValidator.Validate` the
+  registry runs on every account publish — `specVersion`, node and binding
+  rules, reachability, strict template rendering, and schema matching against
+  the output-contract catalog.
+
+  **Errors fail; warnings are annotated and do not.** That is what the app's
+  publish already does, and a package must not be publishable through one door
+  and refused by the other.
+
+  To run the engine validator yourself before tagging, from the app repo:
 
   ```
   dotnet run -v q --file scripts/validate-workflow-package.cs -- <package-dir>
   ```
 
-  from the app repo, which calls the same `WorkflowPackageValidator.Validate`
-  the registry runs on every publish.
+  or from here, against a sibling checkout:
+
+  ```
+  ./scripts/validate-with-engine.sh ../app/Consultologist-Blazor packages/<name>
+  ```
+
+  Until #185 this repo's CI checked structure only, and the README said so —
+  the registry accepted what CI waved through, and the failure surfaced later
+  at pin resolve as "registry unavailable", against an immutable version.
 - `dag.mmd` is **derived** from `nodes` and `results` by the app's
   `WorkflowDagDiagram` and never authored by hand. Nothing regenerates or
   diffs it automatically; regenerate it whenever nodes, bindings,

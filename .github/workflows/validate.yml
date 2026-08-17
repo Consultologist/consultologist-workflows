@@ -10,6 +10,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # #185: the engine's validator needs the app repo AND its agents submodule —
+      # the output-contract catalog lives there, and without it every package
+      # declaring a node output schema fails for the wrong reason. All three repos
+      # are public, so no token is involved. Tracking main rather than pinning a
+      # SHA is deliberate: the point is engine-grade, and a pin drifts silently.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: Consultologist/Consultologist-Blazor
+          submodules: true
+          path: engine
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: "10.0.x"
       - name: Structural validation
         run: |
           set -euo pipefail
@@ -43,6 +56,15 @@ jobs:
           print(f"{name}@{version}: structure OK")
           PY
           done
+      # Runs after the structural step on purpose: a manifest that does not parse
+      # is reported far better there than by the engine, which can only say it
+      # failed to deserialize.
+      - name: Engine validation
+        # A guard, not a budget: the step takes about a minute. The first run
+        # hung for half an hour on a shell bug, and a stuck step should fail
+        # rather than hold a runner.
+        timeout-minutes: 10
+        run: ./scripts/validate-with-engine.sh engine packages/*/
       - name: Version not already published
         run: |
           set -euo pipefail
