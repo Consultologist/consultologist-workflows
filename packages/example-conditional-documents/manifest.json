@@ -9,7 +9,7 @@
 		{ "id": "seen_on", "label": "Date seen", "required": true, "type": "date" },
 		{ "id": "encounter_kind", "label": "Encounter kind", "required": false,
 		  "type": "enum", "values": ["new_patient", "follow_up"] },
-		{ "id": "include_billing", "label": "Include a billing sentence", "required": false,
+		{ "id": "include_billing", "label": "Include a billing sentence", "required": true,
 		  "type": "boolean" }
 	],
 	"data": {
@@ -23,7 +23,7 @@
 	],
 	"results": [
 		{ "id": "consult_note", "node": "node:assemble-consult-note", "label": "Consultation note",
-		  "when": "encounter_kind == not_a_declared_value" },
+		  "when": "encounter_kind == new_patient" },
 		{ "id": "progress_note", "node": "node:assemble-progress-note", "label": "Progress note",
 		  "when": "encounter_kind == follow_up" }
 	],
