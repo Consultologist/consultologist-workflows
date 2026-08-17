@@ -67,6 +67,18 @@ jobs:
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           dotnet-version: "10.0.x"
+      # The checked-out workspace is the TAGGED tree, which is what we want to
+      # validate — and which, for any tag cut before #185, does not contain the
+      # validation script. On a tag push that is harmless (the workflow comes
+      # from the tag too, so there is no engine step to run), but a
+      # workflow_dispatch takes the workflow from main and the content from the
+      # tag, and the mismatch would break exactly the recovery path dispatch
+      # exists for. So the SCRIPT comes from main and the CONTENT from the tag:
+      # newest checker, tagged artifact.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          path: ci
       - name: Engine validation
         # A guard, not a budget: the step takes about a minute. The first run
         # hung for half an hour on a shell bug, and a stuck step should fail
@@ -74,7 +86,7 @@ jobs:
         timeout-minutes: 10
         env:
           NAME: ${{ steps.pkg.outputs.name }}
-        run: ./scripts/validate-with-engine.sh engine "packages/$NAME"
+        run: ./ci/scripts/validate-with-engine.sh engine "packages/$NAME"
       - name: Azure login (OIDC)
         uses: azure/login@532459ea530d8321f2fb9bb10d1e0bcf23869a43 # v3.0.0
         with:
