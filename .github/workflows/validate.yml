@@ -60,6 +60,10 @@ jobs:
       # is reported far better there than by the engine, which can only say it
       # failed to deserialize.
       - name: Engine validation
+        # A guard, not a budget: the step takes about a minute. The first run
+        # hung for half an hour on a shell bug, and a stuck step should fail
+        # rather than hold a runner.
+        timeout-minutes: 10
         run: ./scripts/validate-with-engine.sh engine packages/*/
       - name: Version not already published
         run: |

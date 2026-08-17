@@ -52,20 +52,34 @@ fi
 
 STATUS=0
 
+WORK=$(mktemp -d)
+trap 'rm -rf "$WORK"' EXIT
+
 for PACKAGE in "$@"; do
 	echo "--- $PACKAGE"
 
+	# Plain files rather than $(...) with a process substitution for stderr.
+	# Command substitution waits for every writer to the pipe to close, and the
+	# processes dotnet leaves behind inherit that descriptor — VBCSCompiler, the
+	# Roslyn compiler server, holds it for its ten-minute idle keepalive. The
+	# first CI run cost exactly that per package: the validator answered in
+	# seconds and the shell then sat for ten minutes, three times over, with
+	# tee and sed still listed as orphans when the job was killed. It never
+	# showed up locally, where the compiler server was already warm.
+	#
 	# -v q is load-bearing: without it MSBuild writes build warnings to STDOUT,
-	# and the warning transform below reads stdout. With it, stdout carries only
-	# the validator's own lines.
-	OUT=$(dotnet run -v q --file "$SCRIPT" -- "$PACKAGE" 2> >(tee /dev/stderr | sed -n 's/^error: /::error::/p'))
+	# and the warning transform reads stdout. With it, stdout carries only the
+	# validator's own lines.
+	dotnet run -v q --file "$SCRIPT" -- "$PACKAGE" > "$WORK/out" 2> "$WORK/err"
 	CODE=$?
 
-	printf '%s\n' "$OUT"
-	printf '%s\n' "$OUT" | sed -n 's/^warning: /::warning::/p'
+	cat "$WORK/out"
+	cat "$WORK/err" >&2
 
 	# Anchored at line start so MSBuild's "warning CS8602:" — which is preceded
 	# by a file path — cannot be mistaken for the validator's own "warning: ".
+	sed -n 's/^warning: /::warning::/p' "$WORK/out"
+	sed -n 's/^error: /::error::/p' "$WORK/err"
 
 	if [[ $CODE -ne 0 ]]; then
 		echo "::error::$PACKAGE failed engine validation (exit $CODE)"

@@ -68,6 +68,10 @@ jobs:
         with:
           dotnet-version: "10.0.x"
       - name: Engine validation
+        # A guard, not a budget: the step takes about a minute. The first run
+        # hung for half an hour on a shell bug, and a stuck step should fail
+        # rather than hold a runner.
+        timeout-minutes: 10
         env:
           NAME: ${{ steps.pkg.outputs.name }}
         run: ./scripts/validate-with-engine.sh engine "packages/$NAME"
