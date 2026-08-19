@@ -56,6 +56,44 @@ jobs:
           print(f"{name}@{version}: structure OK")
           PY
           done
+      # The engine step below already enforces this — WorkflowPackageValidator
+      # refuses an unsupported specVersion. But it costs an engine checkout and
+      # about a minute to answer a question that is a four-element array, and it
+      # answers as a validator error rather than as a sentence saying which
+      # document to go and read. Consultologist/consultologist-package-format
+      # publishes the set; this reads it (#376).
+      #
+      # Fetched, not vendored: this repo has no engine checkout at this point,
+      # and the published artifact is the thing worth testing against. A registry
+      # outage must not fail a pull request, so an unreachable document skips.
+      - name: specVersion is one the engine accepts
+        run: |
+          set -euo pipefail
+          BASE=https://consultologistpublic.blob.core.windows.net/package-format
+          if ! VERSION=$(curl -sf --max-time 20 "$BASE/latest.json" | python3 -c 'import json,sys;print(json.load(sys.stdin)["version"])'); then
+            echo "::warning::package-format registry unreachable — leaving this to the engine step"
+            exit 0
+          fi
+          curl -sf --max-time 20 "$BASE/$VERSION/spec-versions.json" > /tmp/spec-versions.json
+          echo "checking against package-format@$VERSION"
+          for MANIFEST in packages/*/manifest.json; do
+            python3 - "$MANIFEST" << 'PY'
+          import json, sys
+          index = json.load(open("/tmp/spec-versions.json"))
+          manifest = json.load(open(sys.argv[1]))
+          spec = manifest.get("specVersion")
+          name = manifest["name"]
+          if spec in index["supported"]:
+              print(f"{name}: specVersion {spec} — {index['documents'][str(spec)]}")
+              sys.exit(0)
+          accepted = ", ".join(str(v) for v in index["supported"])
+          print(f"::error::{name} declares specVersion {spec}; the engine accepts {accepted}. "
+                f"See {index['documents'][str(max(index['supported']))]} in "
+                f"consultologist-package-format for the newest format.")
+          sys.exit(1)
+          PY
+          done
+
       # Runs after the structural step on purpose: a manifest that does not parse
       # is reported far better there than by the engine, which can only say it
       # failed to deserialize.
