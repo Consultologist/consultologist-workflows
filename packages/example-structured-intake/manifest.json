@@ -1,0 +1,91 @@
+{
+	"name": "example-structured-intake",
+	"version": "v2026.08.1",
+	"specVersion": 9,
+	"derivedFrom": null,
+	"title": "Structured intake demo",
+	"description": "A demonstration of what specVersion 9 opened: an array of prior notes fanned per element, a patient object read by path, a number driving an ordering comparison, and a deliverable gated on count(). Not intended for clinical use.",
+	"tags": ["demo", "structured-intake"],
+	"templating": { "engine": "scriban", "engineVersion": "7.2.5" },
+	"inputs": [
+		{ "id": "consult_draft", "label": "Consult draft", "required": true },
+		{ "id": "prior_notes", "label": "Prior notes", "required": false,
+		  "type": "array", "items": "text" },
+		{ "id": "patient", "label": "Patient record", "required": false,
+		  "type": "object", "fields": [
+			{ "id": "age", "label": "Age", "type": "number" },
+			{ "id": "sex", "label": "Sex", "required": false,
+			  "type": "enum", "values": ["female", "male"] }
+		] },
+		{ "id": "length_of_stay", "label": "Length of stay (days)", "required": false,
+		  "type": "number" }
+	],
+	"data": {
+		"sections": "data/sections/"
+	},
+	"prompts": [
+		{ "id": "note-section", "file": "prompts/note-section.md",
+		  "variables": ["consult_draft", "section_name", "section_standard", "patient"] },
+		{ "id": "senior-review-section", "file": "prompts/senior-review-section.md",
+		  "variables": ["consult_draft", "section_name", "section_standard", "patient"] },
+		{ "id": "long-stay-section", "file": "prompts/long-stay-section.md",
+		  "variables": ["consult_draft", "section_name", "section_standard", "length_of_stay"] },
+		{ "id": "summarise-note", "file": "prompts/summarise-note.md",
+		  "variables": ["note"] }
+	],
+	"results": [
+		{ "id": "note", "node": "node:assemble-note", "label": "Consultation note" },
+		{ "id": "senior_review", "node": "node:assemble-senior-review", "label": "Senior review request",
+		  "when": "patient.age >= 65" },
+		{ "id": "long_stay_summary", "node": "node:assemble-long-stay", "label": "Long-stay summary",
+		  "when": "length_of_stay > 7" },
+		{ "id": "notes_digest", "node": "node:assemble-digest", "label": "Prior-notes digest",
+		  "when": "count(prior_notes) > 2" }
+	],
+	"nodes": [
+		{ "id": "note-section", "forEach": "data:sections",
+		  "label": "Drafting the note",
+		  "prompt": "note-section",
+		  "bindings": { "consult_draft": "input:consult_draft",
+		                "section_name": "item:name",
+		                "section_standard": "item:content",
+		                "patient": "input:patient" } },
+
+		{ "id": "senior-review-section", "forEach": "data:sections",
+		  "label": "Drafting the senior review request",
+		  "prompt": "senior-review-section",
+		  "bindings": { "consult_draft": "input:consult_draft",
+		                "section_name": "item:name",
+		                "section_standard": "item:content",
+		                "patient": "input:patient" } },
+
+		{ "id": "long-stay-section", "forEach": "data:sections",
+		  "label": "Drafting the long-stay summary",
+		  "prompt": "long-stay-section",
+		  "bindings": { "consult_draft": "input:consult_draft",
+		                "section_name": "item:name",
+		                "section_standard": "item:content",
+		                "length_of_stay": "input:length_of_stay" } },
+
+		{ "id": "summarise-note", "forEach": "input:prior_notes",
+		  "label": "Summarising a prior note",
+		  "prompt": "summarise-note",
+		  "bindings": { "note": "item:value" } },
+
+		{ "id": "assemble-note",
+		  "label": "Assembling the consultation note",
+		  "aggregate": ["node:note-section"] },
+
+		{ "id": "assemble-senior-review",
+		  "label": "Assembling the senior review request",
+		  "aggregate": ["node:senior-review-section"] },
+
+		{ "id": "assemble-long-stay",
+		  "label": "Assembling the long-stay summary",
+		  "aggregate": ["node:long-stay-section"] },
+
+		{ "id": "assemble-digest",
+		  "label": "Assembling the prior-notes digest",
+		  "aggregate": ["node:summarise-note"] }
+	]
+}

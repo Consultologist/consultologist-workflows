@@ -1,0 +1,45 @@
+flowchart TD
+    input_consult_draft(["input:consult_draft"])
+    input_patient(["input:patient"])
+    data_sections(["data:sections"])
+    input_length_of_stay(["input:length_of_stay"])
+    input_prior_notes(["input:prior_notes"])
+
+    assemble_note["assemble-note<br/>Assembling the consultation note<br/>aggregate"]
+    note_section -->|"aggregate"| assemble_note
+    assemble_senior_review["assemble-senior-review<br/>Assembling the senior review request<br/>aggregate"]
+    senior_review_section -->|"aggregate"| assemble_senior_review
+    assemble_long_stay["assemble-long-stay<br/>Assembling the long-stay summary<br/>aggregate"]
+    long_stay_section -->|"aggregate"| assemble_long_stay
+    assemble_digest["assemble-digest<br/>Assembling the prior-notes digest<br/>aggregate"]
+    summarise_note -->|"aggregate"| assemble_digest
+
+    data_sections -->|"forEach"| foreach_data_sections
+    subgraph foreach_data_sections["per data:sections item"]
+        note_section["note-section<br/>Drafting the note<br/>item: name, content"]
+        senior_review_section["senior-review-section<br/>Drafting the senior review request<br/>item: name, content"]
+        long_stay_section["long-stay-section<br/>Drafting the long-stay summary<br/>item: name, content"]
+    end
+    input_consult_draft -->|"consult_draft"| note_section
+    input_patient -->|"patient"| note_section
+    input_consult_draft -->|"consult_draft"| senior_review_section
+    input_patient -->|"patient"| senior_review_section
+    input_consult_draft -->|"consult_draft"| long_stay_section
+    input_length_of_stay -->|"length_of_stay"| long_stay_section
+
+    input_prior_notes -->|"forEach"| foreach_input_prior_notes
+    subgraph foreach_input_prior_notes["per input:prior_notes item"]
+        summarise_note["summarise-note<br/>Summarising a prior note<br/>item: value"]
+    end
+
+    result_note{{"note<br/>Consultation note"}}
+    assemble_note --> result_note
+    result_senior_review{{"senior_review<br/>Senior review request"}}
+    assemble_senior_review --> result_senior_review
+    input_patient -.->|"when .age >= 65"| result_senior_review
+    result_long_stay_summary{{"long_stay_summary<br/>Long-stay summary"}}
+    assemble_long_stay --> result_long_stay_summary
+    input_length_of_stay -.->|"when > 7"| result_long_stay_summary
+    result_notes_digest{{"notes_digest<br/>Prior-notes digest"}}
+    assemble_digest --> result_notes_digest
+    input_prior_notes -.->|"when count > 2"| result_notes_digest
