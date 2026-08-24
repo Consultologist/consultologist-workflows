@@ -13,6 +13,8 @@ flowchart TD
     long_stay_section -->|"aggregate"| assemble_long_stay
     assemble_digest["assemble-digest<br/>Assembling the prior-notes digest<br/>aggregate"]
     summarise_note -->|"aggregate"| assemble_digest
+    assemble_index["assemble-index<br/>Assembling the prior-notes index<br/>aggregate"]
+    index_note -->|"aggregate"| assemble_index
 
     data_sections -->|"forEach"| foreach_data_sections
     subgraph foreach_data_sections["per data:sections item"]
@@ -30,6 +32,7 @@ flowchart TD
     input_prior_notes -->|"forEach"| foreach_input_prior_notes
     subgraph foreach_input_prior_notes["per input:prior_notes item"]
         summarise_note["summarise-note<br/>Summarising a prior note<br/>item: value"]
+        index_note["index-note<br/>Indexing a prior note<br/>item: value"]
     end
 
     result_note{{"note<br/>Consultation note"}}
@@ -42,4 +45,6 @@ flowchart TD
     input_length_of_stay -.->|"when > 7"| result_long_stay_summary
     result_notes_digest{{"notes_digest<br/>Prior-notes digest"}}
     assemble_digest --> result_notes_digest
-    input_prior_notes -.->|"when count > 2"| result_notes_digest
+    result_notes_index{{"notes_index<br/>Prior-notes index"}}
+    assemble_index --> result_notes_index
+    input_prior_notes -.->|"when count > 2"| result_notes_index
