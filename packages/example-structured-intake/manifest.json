@@ -1,10 +1,10 @@
 {
 	"name": "example-structured-intake",
-	"version": "v2026.08.1",
+	"version": "v2026.08.2",
 	"specVersion": 9,
 	"derivedFrom": null,
 	"title": "Structured intake demo",
-	"description": "A demonstration of what specVersion 9 opened: an array of prior notes fanned per element, a patient object read by path, a number driving an ordering comparison, and a deliverable gated on count(). Not intended for clinical use.",
+	"description": "A demonstration of what specVersion 9 opened: an array of prior notes fanned per element (leave it empty to see the empty-fan refusal), a patient object read by path, a number driving an ordering comparison, and a deliverable gated on count(). Not intended for clinical use.",
 	"tags": ["demo", "structured-intake"],
 	"templating": { "engine": "scriban", "engineVersion": "7.2.5" },
 	"inputs": [
@@ -31,6 +31,8 @@
 		{ "id": "long-stay-section", "file": "prompts/long-stay-section.md",
 		  "variables": ["consult_draft", "section_name", "section_standard", "length_of_stay"] },
 		{ "id": "summarise-note", "file": "prompts/summarise-note.md",
+		  "variables": ["note"] },
+		{ "id": "index-note", "file": "prompts/index-note.md",
 		  "variables": ["note"] }
 	],
 	"results": [
@@ -39,7 +41,8 @@
 		  "when": "patient.age >= 65" },
 		{ "id": "long_stay_summary", "node": "node:assemble-long-stay", "label": "Long-stay summary",
 		  "when": "length_of_stay > 7" },
-		{ "id": "notes_digest", "node": "node:assemble-digest", "label": "Prior-notes digest",
+		{ "id": "notes_digest", "node": "node:assemble-digest", "label": "Prior-notes digest" },
+		{ "id": "notes_index", "node": "node:assemble-index", "label": "Prior-notes index",
 		  "when": "count(prior_notes) > 2" }
 	],
 	"nodes": [
@@ -84,8 +87,17 @@
 		  "label": "Assembling the long-stay summary",
 		  "aggregate": ["node:long-stay-section"] },
 
+		{ "id": "index-note", "forEach": "input:prior_notes",
+		  "label": "Indexing a prior note",
+		  "prompt": "index-note",
+		  "bindings": { "note": "item:value" } },
+
 		{ "id": "assemble-digest",
 		  "label": "Assembling the prior-notes digest",
-		  "aggregate": ["node:summarise-note"] }
+		  "aggregate": ["node:summarise-note"] },
+
+		{ "id": "assemble-index",
+		  "label": "Assembling the prior-notes index",
+		  "aggregate": ["node:index-note"] }
 	]
 }
