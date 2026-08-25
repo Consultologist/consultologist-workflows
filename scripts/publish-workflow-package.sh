@@ -110,6 +110,13 @@ if [[ -f "$PACKAGE_DIR/dag.mmd" ]]; then
 		--file "$PACKAGE_DIR/dag.mmd" --name "$NAME/$VERSION/dag.mmd" --output none
 fi
 
+# The licence travels with the artifact (registry-layout.md § 2; #399):
+# somebody who downloads a version to fork or to re-verify a consult should
+# not have to come back to GitHub to learn what they may do with it.
+echo "Uploading $NAME/$VERSION/LICENSE"
+az storage blob upload "${AUTH[@]}" --container-name "$CONTAINER" \
+	--file LICENSE --name "$NAME/$VERSION/LICENSE" --output none
+
 az storage blob upload "${AUTH[@]}" --container-name "$CONTAINER" \
 	--file "$MANIFEST" --name "$NAME/$VERSION/manifest.json" --output none
 
