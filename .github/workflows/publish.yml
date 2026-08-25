@@ -58,10 +58,30 @@ jobs:
       #
       # submodules: true is load-bearing — the output-contract catalog lives in
       # the agents submodule, and the validator matches every declared package
-      # schema against it.
+      # schema against it. The ref is the deployed engine's commit (#449).
+      # #449: which engine is deployed? The app says so itself at Public/Engine,
+      # and that commit — not main — is what a package will run against. main
+      # stays the fallback when the endpoint cannot say (unreachable, or a build
+      # from before the stamp), and the run says which it used. Same policy as
+      # the registry check: an outage must not block content work.
+      - name: Which engine is deployed
+        id: engine
+        run: |
+          set -euo pipefail
+          URL=https://canada-east-ai-function-gmenbbe9erewh4bj.canadaeast-01.azurewebsites.net/api/Public/Engine
+          if COMMIT=$(curl -sf --max-time 20 "$URL" | python3 -c 'import json,sys;d=json.load(sys.stdin);c=d.get("Commit") or d.get("commit");print(c) if c else sys.exit(1)'); then
+            echo "validating against the deployed engine $COMMIT"
+            echo "ref=$COMMIT" >> "$GITHUB_OUTPUT"
+            echo "Engine validation ran against the **deployed** engine \`$COMMIT\`." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::deployed engine unknown (Public/Engine unreachable or unstamped) — validating against main instead"
+            echo "ref=main" >> "$GITHUB_OUTPUT"
+            echo "Engine validation ran against \`main\` — the deployed engine could not be read." >> "$GITHUB_STEP_SUMMARY"
+          fi
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: Consultologist/Consultologist-Blazor
+          ref: ${{ steps.engine.outputs.ref }}
           submodules: true
           path: engine
       - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
