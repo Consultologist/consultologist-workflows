@@ -74,3 +74,32 @@ workflow authenticates to Azure via GitHub OIDC (no stored secrets) and
 runs `scripts/publish-workflow-package.sh` against the public registry,
 then smoke-checks the published artifacts anonymously. Human registry
 writes are retired; the CI identity is the registry's only writer.
+
+## Licence
+
+The packages in this repository — manifests, prompts, standards, data and
+schemas — are licensed **[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)**
+— © 2026 Tauheed Elahee. Read them, cite them, fork and modify them for
+research and trial, and share what you make under the same terms, with
+attribution. Not for commercial use *under this licence*. The licence file
+travels with every published version (`{name}/{version}/LICENSE`) from the
+first publish after 2026-08-25; earlier versions carry none and are covered
+by this file all the same.
+
+**Inside the Consultologist app the terms are different, and broader.** A
+user who forks a package in the editor may use their fork commercially there
+and holds the copyright in what they authored; the app's terms of use, not
+this file, govern that. This licence is the public default for the content
+outside the app.
+
+What it does not reach:
+
+- **The engine.** Consultologist-Blazor is separately licensed (PolyForm
+  Strict); nothing here grants a right to run it.
+- **The format.** A package that conforms to the published package format is
+  not a derivative of these examples unless it copies them; the format's own
+  documents are licensed by their registry.
+- **Patents and trademarks.** None are granted.
+
+GitHub shows this repository's licence as "Other": it classifies no
+NonCommercial licence.
