@@ -86,11 +86,12 @@ travels with every published version (`{name}/{version}/LICENSE`) from the
 first publish after 2026-08-25; earlier versions carry none and are covered
 by this file all the same.
 
-**Inside the Consultologist app the terms are different, and broader.** A
-user who forks a package in the editor may use their fork commercially there
-and holds the copyright in what they authored; the app's terms of use, not
-this file, govern that. This licence is the public default for the content
-outside the app.
+**Consultologist clients hold a licence that goes beyond this one.** Every
+client may use these packages and their forks commercially — inside the app, and in their own
+environment outside it — and holds the copyright in what they author. That
+permission is part of the client agreement, not this file; this licence is
+the public default for everyone else. Anyone who needs more than it grants
+can ask.
 
 What it does not reach:
 
