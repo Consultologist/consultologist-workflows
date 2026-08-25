@@ -17,6 +17,10 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
 
 - One directory per package under `packages/` (`manifest.json`, `prompts/`,
   `schemas/`, `data/`, optional `dag.mmd`).
+- The registry's layout — paths, CalVer, immutability, `latest.json` — is the
+  contract published as `registry-layout.md` in
+  [consultologist-provenance](https://github.com/Consultologist/consultologist-provenance);
+  this repo's script and CI conform to it.
 - Versions are CalVer (`vYYYY.MM.N`), declared in `manifest.json`, and
   **immutable once published** — the registry refuses re-publishing an
   existing version; `{name}/latest.json` is the only mutable pointer.

@@ -35,7 +35,7 @@ if [[ "$NAME" == acct-* ]]; then
 	exit 1
 fi
 
-if ! [[ "$VERSION" =~ ^v[0-9]{4}\.[0-9]{2}\.[1-9][0-9]*$ ]]; then
+if ! [[ "$VERSION" =~ ^v[0-9]{4}\.(0[1-9]|1[0-2])\.[1-9][0-9]*$ ]]; then
 	echo "error: version '$VERSION' is not vYYYY.MM.N (zero-padded month, counter >= 1)" >&2
 	exit 1
 fi
@@ -70,8 +70,10 @@ if [[ "$HAS_DATA" == "1" && ! -d "$PACKAGE_DIR/data" ]]; then
 fi
 
 echo "Publishing $NAME@$VERSION ..."
-az storage blob upload "${AUTH[@]}" --container-name "$CONTAINER" \
-	--file "$MANIFEST" --name "$NAME/$VERSION/manifest.json" --output none
+# Dependencies first, the manifest last (registry-layout.md § 5): the engine
+# resolves the manifest first, so a publish that stops halfway leaves nothing
+# a reader can find — never a version whose manifest names a file that is not
+# there. Until 2026-08-25 this script uploaded the manifest first.
 if [[ -f "$STANDARDS" ]]; then
 	az storage blob upload "${AUTH[@]}" --container-name "$CONTAINER" \
 		--file "$STANDARDS" --name "$NAME/$VERSION/standards.md" --output none
@@ -107,6 +109,9 @@ if [[ -f "$PACKAGE_DIR/dag.mmd" ]]; then
 	az storage blob upload "${AUTH[@]}" --container-name "$CONTAINER" \
 		--file "$PACKAGE_DIR/dag.mmd" --name "$NAME/$VERSION/dag.mmd" --output none
 fi
+
+az storage blob upload "${AUTH[@]}" --container-name "$CONTAINER" \
+	--file "$MANIFEST" --name "$NAME/$VERSION/manifest.json" --output none
 
 echo "Updating $NAME/latest.json -> $VERSION"
 POINTER=$(mktemp)
