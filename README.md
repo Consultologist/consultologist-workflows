@@ -27,7 +27,10 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
   agents submodule and runs the same `WorkflowPackageValidator.Validate` the
   registry runs on every account publish — `specVersion`, node and binding
   rules, reachability, strict template rendering, and schema matching against
-  the output-contract catalog.
+  the output-contract catalog. Since #449 the app checkout is the commit the
+  **deployed** engine reports at `GET /api/Public/Engine`, so "passed engine
+  validation" is a statement about what will run; `main` is used only when
+  that endpoint cannot say, and the run's summary names which it was.
 
   **Errors fail; warnings are annotated and do not.** That is what the app's
   publish already does, and a package must not be publishable through one door

@@ -19,7 +19,9 @@
 #
 # WorkflowPackageValidator.Validate is the same method the registry runs on
 # every account publish. This is not a second opinion; it is the same one, moved
-# earlier.
+# earlier — and since #449 CI checks the engine out at the commit the deployed
+# app reports (GET /api/Public/Engine), so it is the same build too. main is
+# the fallback only when that endpoint cannot say, and the run says which.
 #
 # Errors fail the run. Warnings are annotated and do NOT fail, which is exactly
 # what the app's publish does — the editor lists them and publishes anyway. A
