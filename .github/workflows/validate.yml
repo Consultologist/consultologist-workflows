@@ -54,8 +54,10 @@ jobs:
           d = os.path.dirname(path)
           m = json.load(open(path))
           name, version = m["name"], m["version"]
-          assert re.fullmatch(r"[a-z0-9][a-z0-9-]*", name), f"bad name {name}"
-          assert re.fullmatch(r"v\d{4}\.\d{2}\.[1-9]\d*", version), f"bad version {version}"
+          # The path grammar package-format v2026.08.6 publishes: up to four
+          # segments (registry-layout.md § 2). A nested name is a path.
+          assert re.fullmatch(r"[a-z0-9][a-z0-9-]*(/[a-z0-9][a-z0-9-]*){0,3}", name), f"bad name {name}"
+          assert re.fullmatch(r"v\d{4}\.(0[1-9]|1[0-2])\.[1-9]\d*", version), f"bad version {version}"
           missing = []
           for p in m.get("prompts", []):
               if not os.path.exists(os.path.join(d, p["file"])): missing.append(p["file"])
