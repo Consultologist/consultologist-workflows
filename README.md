@@ -12,6 +12,7 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
 | `example-two-documents` | A demonstration of what specVersion 7 opened — two declared inputs (one optional) and two deliverables. Not intended for clinical use. |
 | `example-conditional-documents` | A demonstration of what specVersion 8 opened — a typed date, an enum, a boolean, and two deliverables firing on different values of one *optional* enum, so leaving it unanswered produces nothing and the job is refused at start. Not intended for clinical use. |
 | `example-structured-intake` | A demonstration of what specVersion 9 opened — an array of prior notes fanned per element, a patient object read by path (`patient.age >= 65`), a number driving an ordering comparison, an unconditional digest written only from the notes, and an index gated on `count()`. The fanned input is *optional* on purpose: leaving it empty shows the empty-fan refusal and the Failed job record it leaves — the digest has nothing to be written from. Not intended for clinical use. |
+| `example-classifier-scope` | A demonstration of what specVersion 10 opened — a classifier node reads the referral and answers `in_scope`, `out_of_scope` or `needs_information`; three deliverables each fire on one answer (`node:scope == in_scope` …), so the package decides what to produce at the boundary rather than asking at intake. A plan fanned over two sections, or a one-section letter. Not intended for clinical use. |
 
 ## Contract
 
