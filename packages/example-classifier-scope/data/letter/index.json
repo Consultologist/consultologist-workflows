@@ -1,0 +1,14 @@
+{
+  "fields": [
+    "id",
+    "name",
+    "content"
+  ],
+  "items": [
+    {
+      "id": "letter",
+      "name": "Letter",
+      "file": "letter.md"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+flowchart TD
+    input_consult_draft(["input:consult_draft"])
+    data_plan_sections(["data:plan-sections"])
+    data_letter(["data:letter"])
+
+    scope["scope<br/>Is the referral in scope?"]
+    input_consult_draft -->|"referral"| scope
+    assemble_plan["assemble-plan<br/>Assembling the plan<br/>aggregate"]
+    plan_section -->|"aggregate"| assemble_plan
+    assemble_decline_letter["assemble-decline-letter<br/>Assembling the decline letter<br/>aggregate"]
+    decline_letter -->|"aggregate"| assemble_decline_letter
+    assemble_information_request["assemble-information-request<br/>Assembling the request for information<br/>aggregate"]
+    information_request -->|"aggregate"| assemble_information_request
+
+    data_plan_sections -->|"forEach"| foreach_data_plan_sections
+    subgraph foreach_data_plan_sections["per data:plan-sections item"]
+        plan_section["plan-section<br/>Drafting the plan<br/>item: name, content"]
+    end
+    input_consult_draft -->|"consult_draft"| plan_section
+
+    data_letter -->|"forEach"| foreach_data_letter
+    subgraph foreach_data_letter["per data:letter item"]
+        decline_letter["decline-letter<br/>Drafting the decline letter<br/>item: content"]
+        information_request["information-request<br/>Drafting the request for information<br/>item: content"]
+    end
+    input_consult_draft -->|"consult_draft"| decline_letter
+    scope -->|"scope"| decline_letter
+    input_consult_draft -->|"consult_draft"| information_request
+
+    result_plan{{"plan<br/>Plan"}}
+    assemble_plan --> result_plan
+    node_scope -.->|"when == in_scope"| result_plan
+    result_decline_letter{{"decline_letter<br/>Decline letter"}}
+    assemble_decline_letter --> result_decline_letter
+    node_scope -.->|"when == out_of_scope"| result_decline_letter
+    result_information_request{{"information_request<br/>Request for information"}}
+    assemble_information_request --> result_information_request
+    node_scope -.->|"when == needs_information"| result_information_request
