@@ -1,74 +1,162 @@
 {
-	"name": "example-classifier-scope",
-	"version": "v2026.08.1",
-	"specVersion": 10,
-	"derivedFrom": null,
-	"title": "Scope classifier demo",
-	"description": "A demonstration of what specVersion 10 opened: a classifier reads the referral and answers in_scope, out_of_scope or needs_information; the package then produces a plan, a decline letter or a request for further information — one document, decided at the boundary rather than asked at intake. Not intended for clinical use.",
-	"tags": ["demo", "classifier"],
-	"templating": { "engine": "scriban", "engineVersion": "7.2.5" },
-	"inputs": [
-		{ "id": "consult_draft", "label": "Consult draft", "required": true }
-	],
-	"data": {
-		"plan-sections": "data/plan-sections/",
-		"letter": "data/letter/"
-	},
-	"prompts": [
-		{ "id": "classify-scope", "file": "prompts/classify-scope.md",
-		  "variables": ["referral"] },
-		{ "id": "plan-section", "file": "prompts/plan-section.md",
-		  "variables": ["consult_draft", "section_name", "section_standard"] },
-		{ "id": "decline-letter", "file": "prompts/decline-letter.md",
-		  "variables": ["consult_draft", "scope", "letter_standard"] },
-		{ "id": "information-request", "file": "prompts/information-request.md",
-		  "variables": ["consult_draft", "letter_standard"] }
-	],
-	"results": [
-		{ "id": "plan", "node": "node:assemble-plan", "label": "Plan",
-		  "when": "node:scope == in_scope" },
-		{ "id": "decline_letter", "node": "node:assemble-decline-letter", "label": "Decline letter",
-		  "when": "node:scope == out_of_scope" },
-		{ "id": "information_request", "node": "node:assemble-information-request", "label": "Request for information",
-		  "when": "node:scope == needs_information" }
-	],
-	"nodes": [
-		{ "id": "scope", "kind": "classifier",
-		  "label": "Is the referral in scope?",
-		  "prompt": "classify-scope",
-		  "bindings": { "referral": "input:consult_draft" },
-		  "values": ["in_scope", "out_of_scope", "needs_information"] },
-
-		{ "id": "plan-section", "forEach": "data:plan-sections",
-		  "label": "Drafting the plan",
-		  "prompt": "plan-section",
-		  "bindings": { "consult_draft": "input:consult_draft",
-		                "section_name": "item:name",
-		                "section_standard": "item:content" } },
-
-		{ "id": "decline-letter", "forEach": "data:letter",
-		  "label": "Drafting the decline letter",
-		  "prompt": "decline-letter",
-		  "bindings": { "consult_draft": "input:consult_draft",
-		                "scope": "node:scope",
-		                "letter_standard": "item:content" } },
-
-		{ "id": "information-request", "forEach": "data:letter",
-		  "label": "Drafting the request for information",
-		  "prompt": "information-request",
-		  "bindings": { "consult_draft": "input:consult_draft",
-		                "letter_standard": "item:content" } },
-
-		{ "id": "assemble-plan",
-		  "label": "Assembling the plan",
-		  "aggregate": ["node:plan-section"] },
-
-		{ "id": "assemble-decline-letter",
-		  "label": "Assembling the decline letter",
-		  "aggregate": ["node:decline-letter"] },
-
-		{ "id": "assemble-information-request",
-		  "label": "Assembling the request for information",
-		  "aggregate": ["node:information-request"] }
-	]
+  "name": "example-classifier-scope",
+  "version": "v2026.08.2",
+  "specVersion": 11,
+  "derivedFrom": null,
+  "title": "Scope classifier demo",
+  "description": "A demonstration of what specVersion 10 opened: a classifier reads the referral and answers in_scope, out_of_scope or needs_information; the package then produces a plan, a decline letter or a request for further information \u2014 one document, decided at the boundary rather than asked at intake. Not intended for clinical use.",
+  "tags": [
+    "demo",
+    "classifier"
+  ],
+  "templating": {
+    "engine": "scriban",
+    "engineVersion": "7.2.5"
+  },
+  "inputs": [
+    {
+      "id": "consult_draft",
+      "label": "Consult draft",
+      "required": true
+    }
+  ],
+  "data": {
+    "plan-sections": "data/plan-sections/",
+    "letter": "data/letter/"
+  },
+  "prompts": [
+    {
+      "id": "classify-scope",
+      "file": "prompts/classify-scope.md",
+      "variables": [
+        "referral"
+      ]
+    },
+    {
+      "id": "plan-section",
+      "file": "prompts/plan-section.md",
+      "variables": [
+        "consult_draft",
+        "section_name",
+        "section_standard"
+      ]
+    },
+    {
+      "id": "decline-letter",
+      "file": "prompts/decline-letter.md",
+      "variables": [
+        "consult_draft",
+        "scope",
+        "letter_standard"
+      ]
+    },
+    {
+      "id": "information-request",
+      "file": "prompts/information-request.md",
+      "variables": [
+        "consult_draft",
+        "letter_standard"
+      ]
+    }
+  ],
+  "macros": [
+    {
+      "id": "closing",
+      "label": "Closing note",
+      "file": "macros/closing.md"
+    }
+  ],
+  "results": [
+    {
+      "id": "plan",
+      "node": "node:assemble-plan",
+      "label": "Plan",
+      "when": "node:scope == in_scope"
+    },
+    {
+      "id": "decline_letter",
+      "node": "node:assemble-decline-letter",
+      "label": "Decline letter",
+      "when": "node:scope == out_of_scope",
+      "macros": [
+        "closing"
+      ],
+      "signature": true
+    },
+    {
+      "id": "information_request",
+      "node": "node:assemble-information-request",
+      "label": "Request for information",
+      "when": "node:scope == needs_information"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "scope",
+      "kind": "classifier",
+      "label": "Is the referral in scope?",
+      "prompt": "classify-scope",
+      "bindings": {
+        "referral": "input:consult_draft"
+      },
+      "values": [
+        "in_scope",
+        "out_of_scope",
+        "needs_information"
+      ]
+    },
+    {
+      "id": "plan-section",
+      "forEach": "data:plan-sections",
+      "label": "Drafting the plan",
+      "prompt": "plan-section",
+      "bindings": {
+        "consult_draft": "input:consult_draft",
+        "section_name": "item:name",
+        "section_standard": "item:content"
+      }
+    },
+    {
+      "id": "decline-letter",
+      "forEach": "data:letter",
+      "label": "Drafting the decline letter",
+      "prompt": "decline-letter",
+      "bindings": {
+        "consult_draft": "input:consult_draft",
+        "scope": "node:scope",
+        "letter_standard": "item:content"
+      }
+    },
+    {
+      "id": "information-request",
+      "forEach": "data:letter",
+      "label": "Drafting the request for information",
+      "prompt": "information-request",
+      "bindings": {
+        "consult_draft": "input:consult_draft",
+        "letter_standard": "item:content"
+      }
+    },
+    {
+      "id": "assemble-plan",
+      "label": "Assembling the plan",
+      "aggregate": [
+        "node:plan-section"
+      ]
+    },
+    {
+      "id": "assemble-decline-letter",
+      "label": "Assembling the decline letter",
+      "aggregate": [
+        "node:decline-letter"
+      ]
+    },
+    {
+      "id": "assemble-information-request",
+      "label": "Assembling the request for information",
+      "aggregate": [
+        "node:information-request"
+      ]
+    }
+  ]
 }
