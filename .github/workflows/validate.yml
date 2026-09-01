@@ -96,7 +96,7 @@ jobs:
       - name: specVersion is one the engine accepts
         run: |
           set -euo pipefail
-          BASE=https://consultologistpublic.blob.core.windows.net/package-format
+          BASE=https://consultologistpubcaeast.blob.core.windows.net/package-format
           if ! VERSION=$(curl -sf --max-time 20 "$BASE/latest.json" | python3 -c 'import json,sys;print(json.load(sys.stdin)["version"])'); then
             echo "::warning::package-format registry unreachable — leaving this to the engine step"
             exit 0
@@ -136,7 +136,7 @@ jobs:
           for MANIFEST in packages/*/manifest.json; do
             NAME=$(python3 -c "import json,sys; print(json.load(open(sys.argv[1]))['name'])" "$MANIFEST")
             VERSION=$(python3 -c "import json,sys; print(json.load(open(sys.argv[1]))['version'])" "$MANIFEST")
-            CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://consultologistpublic.blob.core.windows.net/workflow-packages/$NAME/$VERSION/manifest.json")
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://consultologistpubcaeast.blob.core.windows.net/workflow-packages/$NAME/$VERSION/manifest.json")
             if [ "$CODE" = "200" ]; then
               echo "::warning::$NAME@$VERSION already published (immutable) — bump the version before tagging"
             else

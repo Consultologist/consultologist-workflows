@@ -114,11 +114,11 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       - name: Publish to the registry
-        run: ./scripts/publish-workflow-package.sh consultologistpublic "packages/${{ steps.pkg.outputs.name }}"
+        run: ./scripts/publish-workflow-package.sh consultologistpubcaeast "packages/${{ steps.pkg.outputs.name }}"
       - name: Smoke-check the published artifacts (anonymous)
         run: |
           set -euo pipefail
-          BASE="https://consultologistpublic.blob.core.windows.net/workflow-packages"
+          BASE="https://consultologistpubcaeast.blob.core.windows.net/workflow-packages"
           NAME="${{ steps.pkg.outputs.name }}"
           VERSION="${{ steps.pkg.outputs.version }}"
           LATEST=$(curl -sf "$BASE/$NAME/latest.json" | python3 -c "import json,sys; print(json.load(sys.stdin)['version'])")
