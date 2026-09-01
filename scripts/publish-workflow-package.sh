@@ -2,7 +2,7 @@
 # Publish a repo-owned workflow package to the PUBLIC registry (Azure Blob Storage)
 # and update its latest-pointer. Published versions are immutable: this script
 # refuses to overwrite an existing version. Since the ownership split (#92),
-# repo-owned packages live in the public account (consultologistpubcaeast) —
+# repo-owned packages live in the public account (consultpubcaeast) —
 # acct-* forks are published only by the app's registry writer, never this script.
 #
 # Usage:
@@ -10,7 +10,7 @@
 #
 # <package-dir> must contain manifest.json (with name, version "vYYYY.MM.N", specVersion).
 # Example:
-#   ./scripts/publish-workflow-package.sh consultologistpubcaeast packages/general
+#   ./scripts/publish-workflow-package.sh consultpubcaeast packages/general
 set -euo pipefail
 
 CONTAINER="workflow-packages"
