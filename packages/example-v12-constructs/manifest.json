@@ -1,0 +1,441 @@
+{
+	"name": "example-v12-constructs",
+	"version": "v2026.09.1",
+	"specVersion": 12,
+	"derivedFrom": null,
+	"title": "The v12 constructs demo",
+	"description": "A demonstration of everything specVersion 12 opened: an optional macro the run chooses (with a declared default), a macro placed against a section, a closing macro carrying the profile signature, conditional macros gated on a tone classifier, a template node whose render IS its output, and two checks \u2014 the note's passes, while the letter's fixed template text cannot cover the referral's clinical terms and records a deterministic failure. Not intended for clinical use.",
+	"templating": {
+		"engine": "scriban",
+		"engineVersion": "7.2.5"
+	},
+	"preludes": {
+		"snomed-tool-guidance": "prompts/_snomed-tool-guidance.md"
+	},
+	"prompts": [
+		{
+			"id": "extract-patient-concepts",
+			"file": "prompts/extract-patient-concepts.md",
+			"variables": [
+				"consult_draft"
+			],
+			"prelude": "snomed-tool-guidance"
+		},
+		{
+			"id": "identify-problem",
+			"file": "prompts/identify-problem.md",
+			"variables": [
+				"patient_concepts"
+			],
+			"prelude": "snomed-tool-guidance"
+		},
+		{
+			"id": "create-typical-trajectory",
+			"file": "prompts/create-typical-trajectory.md",
+			"variables": [
+				"problem_concepts"
+			],
+			"prelude": "snomed-tool-guidance"
+		},
+		{
+			"id": "create-patient-trajectory",
+			"file": "prompts/create-patient-trajectory.md",
+			"variables": [
+				"problem_concepts",
+				"patient_concepts",
+				"typical_trajectory_concepts"
+			],
+			"prelude": "snomed-tool-guidance"
+		},
+		{
+			"id": "standard-section-draft",
+			"file": "prompts/standard-section-draft.md",
+			"variables": [
+				"section_name",
+				"patient_trajectory_concepts"
+			]
+		},
+		{
+			"id": "patient-section-draft",
+			"file": "prompts/patient-section-draft.md",
+			"variables": [
+				"standard_section_draft",
+				"consult_draft",
+				"section_name"
+			]
+		},
+		{
+			"id": "section-instructions",
+			"file": "prompts/section-instructions.md",
+			"variables": [
+				"patient_section_draft",
+				"section_name",
+				"section_standard"
+			]
+		},
+		{
+			"id": "classify-tone",
+			"file": "prompts/classify-tone.md",
+			"variables": [
+				"referral"
+			]
+		},
+		{
+			"id": "extract-terms",
+			"file": "prompts/extract-terms.md",
+			"variables": [
+				"text"
+			]
+		},
+		{
+			"id": "header",
+			"file": "prompts/header.md",
+			"variables": [
+				"seen_on"
+			]
+		},
+		{
+			"id": "letter-body",
+			"file": "prompts/letter-body.md",
+			"variables": []
+		}
+	],
+	"schemas": {
+		"concept-list": "schemas/concept-list.json"
+	},
+	"nodes": [
+		{
+			"id": "extract-patient-concepts",
+			"label": "Extracting clinical concepts",
+			"prompt": "extract-patient-concepts",
+			"bindings": {
+				"consult_draft": "input:consult_draft"
+			},
+			"output": {
+				"schema": "concept-list",
+				"failIfEmpty": "The consult could not be processed because clinical concepts could not be extracted from the draft."
+			}
+		},
+		{
+			"id": "identify-problem",
+			"label": "Identifying primary problem",
+			"prompt": "identify-problem",
+			"bindings": {
+				"patient_concepts": "node:extract-patient-concepts"
+			},
+			"output": {
+				"schema": "concept-list",
+				"failIfEmpty": "No valid disease or problem concept was identified."
+			}
+		},
+		{
+			"id": "create-typical-trajectory",
+			"label": "Building reference trajectory",
+			"prompt": "create-typical-trajectory",
+			"bindings": {
+				"problem_concepts": "node:identify-problem"
+			},
+			"output": {
+				"schema": "concept-list",
+				"failIfEmpty": "No valid typical trajectory concepts were generated."
+			}
+		},
+		{
+			"id": "create-patient-trajectory",
+			"label": "Building patient trajectory",
+			"prompt": "create-patient-trajectory",
+			"bindings": {
+				"problem_concepts": "node:identify-problem",
+				"patient_concepts": "node:extract-patient-concepts",
+				"typical_trajectory_concepts": "node:create-typical-trajectory"
+			},
+			"output": {
+				"schema": "concept-list",
+				"failIfEmpty": "No valid patient trajectory concepts were generated."
+			}
+		},
+		{
+			"id": "standard-section-draft",
+			"label": "Drafting section",
+			"prompt": "standard-section-draft",
+			"bindings": {
+				"section_name": "item:name",
+				"patient_trajectory_concepts": {
+					"from": "node:create-patient-trajectory",
+					"as": "concept-context"
+				}
+			},
+			"forEach": "data:standards"
+		},
+		{
+			"id": "patient-section-draft",
+			"label": "Applying patient information",
+			"prompt": "patient-section-draft",
+			"bindings": {
+				"standard_section_draft": "node:standard-section-draft",
+				"consult_draft": "input:consult_draft",
+				"section_name": "item:name"
+			},
+			"forEach": "data:standards"
+		},
+		{
+			"id": "section-instructions",
+			"label": "Applying section instructions",
+			"prompt": "section-instructions",
+			"bindings": {
+				"patient_section_draft": "node:patient-section-draft",
+				"section_name": "item:name",
+				"section_standard": "item:content"
+			},
+			"forEach": "data:standards"
+		},
+		{
+			"id": "assemble-note",
+			"label": "Assemble note",
+			"aggregate": [
+				"node:section-instructions",
+				"node:patient-header"
+			]
+		},
+		{
+			"id": "tone",
+			"label": "Reading the referral's tone",
+			"prompt": "classify-tone",
+			"bindings": {
+				"referral": "input:consult_draft"
+			},
+			"kind": "classifier",
+			"values": [
+				"formal",
+				"friendly"
+			]
+		},
+		{
+			"id": "patient-header",
+			"label": "Patient header",
+			"prompt": "header",
+			"bindings": {
+				"seen_on": "input:seen_on"
+			},
+			"kind": "template"
+		},
+		{
+			"id": "extract-input-terms",
+			"label": "Extracting the referral's terms",
+			"prompt": "extract-terms",
+			"bindings": {
+				"text": "input:consult_draft"
+			},
+			"output": {
+				"schema": "concept-list"
+			}
+		},
+		{
+			"id": "extract-note-terms",
+			"label": "Extracting the note's terms",
+			"prompt": "extract-terms",
+			"bindings": {
+				"text": "node:assemble-note"
+			},
+			"output": {
+				"schema": "concept-list"
+			}
+		},
+		{
+			"id": "note-coverage",
+			"label": "Note coverage check",
+			"kind": "check",
+			"op": "terms-subset",
+			"of": "node:extract-input-terms",
+			"in": "node:extract-note-terms",
+			"failWith": "The note does not cover every clinical term found in the referral."
+		},
+		{
+			"id": "letter-body",
+			"label": "Acknowledgement body",
+			"prompt": "letter-body",
+			"forEach": "data:standards",
+			"kind": "template"
+		},
+		{
+			"id": "assemble-letter",
+			"label": "Assembling the acknowledgement",
+			"aggregate": [
+				"node:letter-body"
+			]
+		},
+		{
+			"id": "extract-letter-terms",
+			"label": "Extracting the letter's terms",
+			"prompt": "extract-terms",
+			"bindings": {
+				"text": "node:assemble-letter"
+			},
+			"output": {
+				"schema": "concept-list"
+			}
+		},
+		{
+			"id": "letter-coverage",
+			"label": "Letter coverage check",
+			"kind": "check",
+			"op": "terms-subset",
+			"of": "node:extract-input-terms",
+			"in": "node:extract-letter-terms",
+			"failWith": "The acknowledgement does not cover the referral's clinical terms."
+		}
+	],
+	"data": {
+		"standards": "data/standards/"
+	},
+	"inputs": [
+		{
+			"id": "consult_draft",
+			"label": "Consult draft",
+			"required": true
+		},
+		{
+			"id": "seen_on",
+			"label": "Date seen",
+			"required": true,
+			"type": "date"
+		},
+		{
+			"id": "encounter_kind",
+			"label": "Encounter kind",
+			"required": true,
+			"type": "enum",
+			"values": [
+				"new_patient",
+				"follow_up"
+			]
+		},
+		{
+			"id": "billable",
+			"label": "Billable encounter",
+			"required": false,
+			"type": "boolean"
+		},
+		{
+			"id": "length_of_stay",
+			"label": "Length of stay (days)",
+			"required": false,
+			"type": "number"
+		},
+		{
+			"id": "patient",
+			"label": "Patient record",
+			"required": false,
+			"type": "object",
+			"fields": [
+				{
+					"id": "family_name",
+					"label": "Family name",
+					"required": true
+				},
+				{
+					"id": "age",
+					"label": "Age",
+					"required": true,
+					"type": "number"
+				},
+				{
+					"id": "sex",
+					"label": "Sex",
+					"required": false,
+					"type": "enum",
+					"values": [
+						"female",
+						"male"
+					]
+				}
+			]
+		},
+		{
+			"id": "prior_notes",
+			"label": "Prior notes",
+			"required": false,
+			"type": "array",
+			"items": "text"
+		},
+		{
+			"id": "medications",
+			"label": "Medications",
+			"required": false,
+			"type": "array",
+			"items": "object",
+			"fields": [
+				{
+					"id": "name",
+					"label": "Drug",
+					"required": true
+				},
+				{
+					"id": "dose",
+					"label": "Dose",
+					"required": false
+				}
+			]
+		}
+	],
+	"results": [
+		{
+			"id": "consult",
+			"node": "node:assemble-note",
+			"label": "Consultation note",
+			"macros": [
+				{
+					"id": "disclaimer",
+					"before": "node:patient-header"
+				},
+				{
+					"id": "formal_note",
+					"when": "node:tone == formal"
+				},
+				{
+					"id": "friendly_note",
+					"when": "node:tone == friendly"
+				},
+				"followup",
+				"closing"
+			],
+			"check": "node:note-coverage"
+		},
+		{
+			"id": "ack_letter",
+			"node": "node:assemble-letter",
+			"label": "Acknowledgement letter",
+			"check": "node:letter-coverage"
+		}
+	],
+	"tags": [],
+	"macros": [
+		{
+			"id": "disclaimer",
+			"label": "Standing disclaimer",
+			"file": "macros/disclaimer.md"
+		},
+		{
+			"id": "formal_note",
+			"label": "Formal closing note",
+			"file": "macros/formal_note.md"
+		},
+		{
+			"id": "friendly_note",
+			"label": "Friendly closing note",
+			"file": "macros/friendly_note.md"
+		},
+		{
+			"id": "followup",
+			"label": "Follow-up offer",
+			"file": "macros/followup.md",
+			"optional": true,
+			"default": true
+		},
+		{
+			"id": "closing",
+			"label": "Signature closing",
+			"file": "macros/closing.md"
+		}
+	]
+}
