@@ -1,0 +1,1 @@
+A follow-up appointment will be arranged within three months.

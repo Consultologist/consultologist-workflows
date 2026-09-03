@@ -1,0 +1,1 @@
+Use short SNOMED search terms.

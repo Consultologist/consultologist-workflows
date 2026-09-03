@@ -1,0 +1,7 @@
+{
+  "fields": ["id", "name", "content"],
+  "items": [
+    { "id": "hpi", "name": "History of Present Illness", "file": "hpi.md" },
+    { "id": "pmh", "name": "Past Medical History", "file": "pmh.md" }
+  ]
+}
