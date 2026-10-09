@@ -51,7 +51,7 @@ jobs:
       - name: Structural validation
         run: |
           set -euo pipefail
-          for MANIFEST in packages/*/manifest.json; do
+          for MANIFEST in $(find packages -name manifest.json | sort); do
             DIR=$(dirname "$MANIFEST")
             python3 - "$MANIFEST" << 'PY'
           import json, re, sys, os
@@ -70,6 +70,8 @@ jobs:
               if not os.path.exists(os.path.join(d, f)): missing.append(f)
           for f in (m.get("schemas") or {}).values():
               if not os.path.exists(os.path.join(d, f)): missing.append(f)
+          for macro in m.get("macros") or []:
+              if not os.path.exists(os.path.join(d, macro["file"])): missing.append(macro["file"])
           for key, val in (m.get("data") or {}).items():
               if val.endswith("/"):
                   idx = os.path.join(d, val, "index.json")
@@ -103,7 +105,7 @@ jobs:
           fi
           curl -sf --max-time 20 "$BASE/$VERSION/spec-versions.json" > /tmp/spec-versions.json
           echo "checking against package-format@$VERSION"
-          for MANIFEST in packages/*/manifest.json; do
+          for MANIFEST in $(find packages -name manifest.json | sort); do
             python3 - "$MANIFEST" << 'PY'
           import json, sys
           index = json.load(open("/tmp/spec-versions.json"))
@@ -129,11 +131,11 @@ jobs:
         # hung for half an hour on a shell bug, and a stuck step should fail
         # rather than hold a runner.
         timeout-minutes: 10
-        run: ./scripts/validate-with-engine.sh engine packages/*/
+        run: ./scripts/validate-with-engine.sh engine $(find packages -name manifest.json -exec dirname {} \; | sort)
       - name: Version not already published
         run: |
           set -euo pipefail
-          for MANIFEST in packages/*/manifest.json; do
+          for MANIFEST in $(find packages -name manifest.json | sort); do
             NAME=$(python3 -c "import json,sys; print(json.load(open(sys.argv[1]))['name'])" "$MANIFEST")
             VERSION=$(python3 -c "import json,sys; print(json.load(open(sys.argv[1]))['version'])" "$MANIFEST")
             CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://consultpubcaeast.blob.core.windows.net/workflow-packages/$NAME/$VERSION/manifest.json")
