@@ -9,6 +9,7 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
 | Package | What it is |
 |---|---|
 | `general` | The production consult workflow: one input, one assembled note. |
+| `test/general` | The `general` workflow as the editor evolves it, at the newest format (specVersion 24): a nested name (`packages/test/general`), the SNOMED tool guidance composed as a **node macro** before the four concept prompts (a migrated prelude), a slot-placed macro and an appended one on the note. A proving ground for the current format, not a clinical release. |
 | `example-two-documents` | A demonstration of what specVersion 7 opened — two declared inputs (one optional) and two deliverables. Not intended for clinical use. |
 | `example-conditional-documents` | A demonstration of what specVersion 8 opened — a typed date, an enum, a boolean, and two deliverables firing on different values of one *optional* enum, so leaving it unanswered produces nothing and the job is refused at start. Not intended for clinical use. |
 | `example-structured-intake` | A demonstration of what specVersion 9 opened — an array of prior notes fanned per element, a patient object read by path (`patient.age >= 65`), a number driving an ordering comparison, an unconditional digest written only from the notes, and an index gated on `count()`. The fanned input is *optional* on purpose: leaving it empty shows the empty-fan refusal and the Failed job record it leaves — the digest has nothing to be written from. Not intended for clinical use. |
