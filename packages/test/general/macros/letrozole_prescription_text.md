@@ -1,0 +1,1 @@
+Discussed side effects including: hot flashes, joint or muscle pain, fatigue, headache, nausea, and bone thinning. Advised to monitor side effects.

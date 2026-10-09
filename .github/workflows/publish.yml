@@ -3,7 +3,9 @@ name: Publish package
 on:
   push:
     tags:
-      - "*-v*"
+      # "**": a nested package name (packages/test/general → test/general-v…)
+      # carries a slash, which "*" never matches.
+      - "**-v*"
   # A tag push is the normal trigger. This is the manual one, for when the
   # push event never arrives — GitHub dropped tag webhooks during the
   # 2026-08-06 Actions incident, and a tag ref already exists so re-pushing

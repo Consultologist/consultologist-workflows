@@ -1,0 +1,262 @@
+{
+  "name": "test/general",
+  "version": "v2026.10.8",
+  "specVersion": 24,
+  "templating": {
+    "engine": "scriban",
+    "engineVersion": "7.2.5"
+  },
+  "prompts": [
+    {
+      "id": "extract-patient-concepts",
+      "file": "prompts/extract-patient-concepts.md",
+      "variables": [
+        "consult_draft"
+      ]
+    },
+    {
+      "id": "identify-problem",
+      "file": "prompts/identify-problem.md",
+      "variables": [
+        "patient_concepts",
+        "specialty"
+      ]
+    },
+    {
+      "id": "create-typical-trajectory",
+      "file": "prompts/create-typical-trajectory.md",
+      "variables": [
+        "problem_concepts",
+        "specialty"
+      ]
+    },
+    {
+      "id": "create-patient-trajectory",
+      "file": "prompts/create-patient-trajectory.md",
+      "variables": [
+        "problem_concepts",
+        "patient_concepts",
+        "typical_trajectory_concepts",
+        "specialty"
+      ]
+    },
+    {
+      "id": "standard-section-draft",
+      "file": "prompts/standard-section-draft.md",
+      "variables": [
+        "section_name",
+        "patient_trajectory_concepts",
+        "specialty",
+        "note_type"
+      ]
+    },
+    {
+      "id": "patient-section-draft",
+      "file": "prompts/patient-section-draft.md",
+      "variables": [
+        "standard_section_draft",
+        "consult_draft",
+        "section_name"
+      ]
+    },
+    {
+      "id": "section-instructions",
+      "file": "prompts/section-instructions.md",
+      "variables": [
+        "patient_section_draft",
+        "section_name",
+        "section_standard",
+        "specialty",
+        "note_type"
+      ]
+    }
+  ],
+  "schemas": {
+    "concept-list": "schemas/concept-list.json"
+  },
+  "nodes": [
+    {
+      "id": "extract-patient-concepts",
+      "label": "Extracting clinical concepts",
+      "prompt": "extract-patient-concepts",
+      "bindings": {
+        "consult_draft": "input:consult_draft"
+      },
+      "output": {
+        "schema": "concept-list",
+        "failIfEmpty": "The consult could not be processed because clinical concepts could not be extracted from the draft."
+      },
+      "macros": [
+        "snomed_tool_guidance"
+      ]
+    },
+    {
+      "id": "identify-problem",
+      "label": "Identifying primary problem",
+      "prompt": "identify-problem",
+      "bindings": {
+        "patient_concepts": "node:extract-patient-concepts",
+        "specialty": "input:consult_specialty"
+      },
+      "output": {
+        "schema": "concept-list",
+        "failIfEmpty": "No valid disease or problem concept was identified."
+      },
+      "macros": [
+        "snomed_tool_guidance"
+      ]
+    },
+    {
+      "id": "create-typical-trajectory",
+      "label": "Building reference trajectory",
+      "prompt": "create-typical-trajectory",
+      "bindings": {
+        "problem_concepts": "node:identify-problem",
+        "specialty": "input:consult_specialty"
+      },
+      "output": {
+        "schema": "concept-list",
+        "failIfEmpty": "No valid typical trajectory concepts were generated."
+      },
+      "macros": [
+        "snomed_tool_guidance"
+      ]
+    },
+    {
+      "id": "create-patient-trajectory",
+      "label": "Building patient trajectory",
+      "prompt": "create-patient-trajectory",
+      "bindings": {
+        "problem_concepts": "node:identify-problem",
+        "patient_concepts": "node:extract-patient-concepts",
+        "typical_trajectory_concepts": "node:create-typical-trajectory",
+        "specialty": "input:consult_specialty"
+      },
+      "output": {
+        "schema": "concept-list",
+        "failIfEmpty": "No valid patient trajectory concepts were generated."
+      },
+      "macros": [
+        "snomed_tool_guidance"
+      ]
+    },
+    {
+      "id": "standard-section-draft",
+      "label": "Drafting section",
+      "prompt": "standard-section-draft",
+      "bindings": {
+        "section_name": "item:name",
+        "patient_trajectory_concepts": {
+          "from": "node:create-patient-trajectory",
+          "as": "concept-context"
+        },
+        "specialty": "input:consult_specialty",
+        "note_type": "input:note_type"
+      },
+      "forEach": "data:standards"
+    },
+    {
+      "id": "patient-section-draft",
+      "label": "Applying patient information",
+      "prompt": "patient-section-draft",
+      "bindings": {
+        "standard_section_draft": "node:standard-section-draft",
+        "consult_draft": "input:consult_draft",
+        "section_name": "item:name"
+      },
+      "forEach": "data:standards"
+    },
+    {
+      "id": "section-instructions",
+      "label": "Applying section instructions",
+      "prompt": "section-instructions",
+      "bindings": {
+        "patient_section_draft": "node:patient-section-draft",
+        "section_name": "item:name",
+        "section_standard": "item:content",
+        "specialty": "input:consult_specialty",
+        "note_type": "input:note_type"
+      },
+      "forEach": "data:standards"
+    },
+    {
+      "id": "assemble-note",
+      "label": "Assembling note",
+      "aggregate": [
+        "node:section-instructions"
+      ]
+    }
+  ],
+  "data": {
+    "standards": "data/standards/"
+  },
+  "inputs": [
+    {
+      "id": "consult_specialty",
+      "label": "Specialty",
+      "required": true,
+      "type": "enum",
+      "values": [
+        "family_medicine",
+        "internal_medicine",
+        "medical_oncology",
+        "cardiology",
+        "infectious_diseases",
+        "endocrinology",
+        "pediatric_infectious_diseases",
+        "pediatric_cardiology"
+      ]
+    },
+    {
+      "id": "note_type",
+      "label": "Note Type",
+      "required": true,
+      "type": "enum",
+      "values": [
+        "consult",
+        "follow_up",
+        "discharge_summary",
+        "consult_requisition"
+      ]
+    },
+    {
+      "id": "consult_draft",
+      "label": "Consult draft",
+      "required": true,
+      "type": "array",
+      "items": "text"
+    }
+  ],
+  "results": [
+    {
+      "id": "consult",
+      "node": "node:assemble-note",
+      "label": "Consultation note",
+      "macros": [
+        {
+          "id": "letrozole_prescription_text",
+          "slot": true
+        },
+        "test"
+      ]
+    }
+  ],
+  "tags": [],
+  "macros": [
+    {
+      "id": "letrozole_prescription_text",
+      "label": "Letrozole prescription text",
+      "file": "macros/letrozole_prescription_text.md"
+    },
+    {
+      "id": "test",
+      "label": "test",
+      "file": "macros/test.md"
+    },
+    {
+      "id": "snomed_tool_guidance",
+      "label": "SNOMED tool guidance",
+      "file": "macros/snomed_tool_guidance.md"
+    }
+  ]
+}
