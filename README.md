@@ -9,7 +9,7 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
 | Package | What it is |
 |---|---|
 | `general` | The production consult workflow: one input, one assembled note. |
-| `test/general` | The `general` workflow as the editor evolves it, at the newest format (specVersion 24): a nested name (`packages/test/general`), the SNOMED tool guidance composed as a **node macro** before the four concept prompts (a migrated prelude), a slot-placed macro and an appended one on the note. A proving ground for the current format, not a clinical release. |
+| `test/general` | The `general` workflow as the editor evolves it, at the newest format (specVersion 25): a nested name (`packages/test/general`), the SNOMED tool guidance read inline as a **snippet** by the four concept prompts (a migrated prelude), a slot-placed macro and an appended one on the note. A proving ground for the current format, not a clinical release. |
 | `example-two-documents` | A demonstration of what specVersion 7 opened — two declared inputs (one optional) and two deliverables. Not intended for clinical use. |
 | `example-conditional-documents` | A demonstration of what specVersion 8 opened — a typed date, an enum, a boolean, and two deliverables firing on different values of one *optional* enum, so leaving it unanswered produces nothing and the job is refused at start. Not intended for clinical use. |
 | `example-structured-intake` | A demonstration of what specVersion 9 opened — an array of prior notes fanned per element, a patient object read by path (`patient.age >= 65`), a number driving an ordering comparison, an unconditional digest written only from the notes, and an index gated on `count()`. The fanned input is *optional* on purpose: leaving it empty shows the empty-fan refusal and the Failed job record it leaves — the digest has nothing to be written from. Not intended for clinical use. |
@@ -19,7 +19,8 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
 ## Contract
 
 - One directory per package under `packages/` (`manifest.json`, `prompts/`,
-  `schemas/`, `data/`, optional `dag.mmd`).
+  `snippets/`, `macros/`, optional `formats/`, optional `dag.mmd`; `schemas/`
+  and `data/` are the layout below specVersion 25).
 - The registry's layout — paths, CalVer, immutability, `latest.json` — is the
   contract published as `registry-layout.md` in
   [consultologist-provenance](https://github.com/Consultologist/consultologist-provenance);
@@ -58,7 +59,7 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
   Until #185 this repo's CI checked structure only, and the README said so —
   the registry accepted what CI waved through, and the failure surfaced later
   at pin resolve as "registry unavailable", against an immutable version.
-- `dag.mmd` is **derived** from `nodes` and `results` by the app's
+- `dag.mmd` is **derived** from `nodes` and `deliverables` by the app's
   `WorkflowDagDiagram` and never authored by hand. Nothing regenerates or
   diffs it automatically; regenerate it whenever nodes, bindings,
   deliverables or their conditions change:
@@ -69,6 +70,20 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
 
   The `-v q` is load-bearing: MSBuild writes build warnings to stdout, so
   a redirect without it captures them into the diagram.
+- **Migrating a package to specVersion 25** runs the app repo's offline runner
+  over the package directory — a dry run first, then `--write`:
+
+  ```
+  dotnet run -v q --file scripts/migrate-workflow-package.cs -- <package-dir>
+  dotnet run -v q --file scripts/migrate-workflow-package.cs -- <package-dir> --write
+  ```
+
+  It stages the package to 24 the editor's way (a prelude becomes a macro
+  composed before its prompts), runs the library's 24 → 25 rewriter, writes
+  the files, `manifest.json` and a regenerated `dag.mmd`, and prints the
+  validator's verdict. What it cannot write it names as errors: a macro that
+  is still placed on an output needs an `instruction`, a custom format needs a
+  description. Make those edits, re-run the validator, bump the CalVer, tag.
 
 ## Publishing (CI-only)
 
