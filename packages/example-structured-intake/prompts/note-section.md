@@ -1,8 +1,8 @@
 You are drafting one section of a consultation note.
 
 Patient context (from structured intake; blank where not supplied):
-Age: {{ patient.age }}
-Sex: {{ patient.sex }}
+Age: {{ input.patient.age }}
+Sex: {{ input.patient.sex }}
 
 Task:
 Write the requested section using only the referral below, following the section standard.
@@ -14,10 +14,10 @@ Output rule:
 Return only prose for the requested section. Do not include a heading, JSON, markdown, bullets, or commentary.
 
 Requested section:
-{{ section_name }}
+{{ item.name }}
 
 Section standard:
-{{ section_standard }}
+{{ item.content }}
 
 Referral:
-{{ consult_draft }}
+{{ input.consult_draft }}

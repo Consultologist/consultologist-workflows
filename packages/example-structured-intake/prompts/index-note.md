@@ -10,4 +10,4 @@ Output rule:
 Return only that one line. No heading, JSON, markdown, bullets, or commentary.
 
 Prior note:
-{{ note }}
+{{ item.value }}
