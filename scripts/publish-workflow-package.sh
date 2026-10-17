@@ -69,6 +69,19 @@ if [[ "$HAS_DATA" == "1" && ! -d "$PACKAGE_DIR/data" ]]; then
 	exit 1
 fi
 
+# package-format v25: data became snippets, and a package may declare its own formats.
+HAS_SNIPPETS=$(python3 -c "import json;print(1 if json.load(open('$MANIFEST')).get('snippets') else 0)")
+if [[ "$HAS_SNIPPETS" == "1" && ! -d "$PACKAGE_DIR/snippets" ]]; then
+	echo "error: the manifest declares snippets but $PACKAGE_DIR/snippets is missing" >&2
+	exit 1
+fi
+
+HAS_FORMATS=$(python3 -c "import json;print(1 if json.load(open('$MANIFEST')).get('formats') else 0)")
+if [[ "$HAS_FORMATS" == "1" && ! -d "$PACKAGE_DIR/formats" ]]; then
+	echo "error: the manifest declares formats but $PACKAGE_DIR/formats is missing" >&2
+	exit 1
+fi
+
 echo "Publishing $NAME@$VERSION ..."
 # Dependencies first, the manifest last (registry-layout.md § 5): the engine
 # resolves the manifest first, so a publish that stops halfway leaves nothing
@@ -93,6 +106,17 @@ if [[ -d "$PACKAGE_DIR/schemas" ]]; then
 	done
 fi
 
+# Package formats (package-format v25): declared in manifest.formats[].file, under
+# formats/. A folder this script does not upload publishes silently incomplete
+# against an immutable version (the macros lesson of 2026-10-08), so every
+# folder the format names has its loop here.
+if [[ -d "$PACKAGE_DIR/formats" ]]; then
+	for f in "$PACKAGE_DIR"/formats/*.json; do
+		az storage blob upload "${AUTH[@]}" --container-name "$CONTAINER" \
+			--file "$f" --name "$NAME/$VERSION/formats/$(basename "$f")" --output none
+	done
+fi
+
 # Macro bodies (package-format v11): declared in manifest.macros[].file, under
 # macros/. Until 2026-10-08 this script never uploaded them, so a published
 # package that declared any resolved to a version missing its macro files
@@ -112,6 +136,16 @@ if [[ -d "$PACKAGE_DIR/data" ]]; then
 		az storage blob upload "${AUTH[@]}" --container-name "$CONTAINER" \
 			--file "$f" --name "$NAME/$VERSION/$rel" --output none
 	done < <(find "$PACKAGE_DIR/data" -type f -print0)
+fi
+
+# Snippets (package-format v25: data renamed — scalar files and folders with
+# index.json + item files) upload recursively, like data did.
+if [[ -d "$PACKAGE_DIR/snippets" ]]; then
+	while IFS= read -r -d '' f; do
+		rel="${f#"$PACKAGE_DIR"/}"
+		az storage blob upload "${AUTH[@]}" --container-name "$CONTAINER" \
+			--file "$f" --name "$NAME/$VERSION/$rel" --output none
+	done < <(find "$PACKAGE_DIR/snippets" -type f -print0)
 fi
 
 # The derived DAG diagram rides along when present (generated, never authored;

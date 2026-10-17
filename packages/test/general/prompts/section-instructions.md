@@ -1,4 +1,4 @@
-You are applying section-specific writing standards and user instructions to one {{ specialty }} {{ note_type }} note section.
+You are applying section-specific writing standards and user instructions to one {{ input.consult_specialty }} {{ input.note_type }} note section.
 
 Task:
 Revise the patient-updated section draft to follow the section standard and section-specific user instructions.
@@ -14,10 +14,10 @@ Placement markers:
 If the section standard instructs you to output a literal token of the form [[slot:...]], include that token verbatim on its own line. It is a placement marker the system fills afterward, not commentary — the one exception to the output rule above.
 
 Requested section:
-{{ section_name }}
+{{ item.name }}
 
 Patient-updated section draft:
-{{ patient_section_draft }}
+{{ node.patient_section_draft.content }}
 
 Section standard and section-specific instructions:
-{{ if (section_standard | string.strip) == "" }}No changes. Preserve the patient-updated draft's clinical content and produce polished final prose for this section.{{ else }}{{ section_standard }}{{ end }}
+{{ if (item.content | string.strip) == "" }}No changes. Preserve the patient-updated draft's clinical content and produce polished final prose for this section.{{ else }}{{ item.content }}{{ end }}

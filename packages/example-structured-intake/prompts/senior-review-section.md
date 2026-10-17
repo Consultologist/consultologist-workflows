@@ -1,4 +1,4 @@
-You are drafting one section of a senior review request for a patient aged {{ patient.age }}{{ if patient.sex }} ({{ patient.sex }}){{ end }}.
+You are drafting one section of a senior review request for a patient aged {{ input.patient.age }}{{ if input.patient.sex }} ({{ input.patient.sex }}){{ end }}.
 
 Task:
 Write the requested section as a concise request for senior clinician review, using only the referral below and following the section standard.
@@ -10,10 +10,10 @@ Output rule:
 Return only prose for the requested section. No heading, JSON, markdown, bullets, or commentary.
 
 Requested section:
-{{ section_name }}
+{{ item.name }}
 
 Section standard:
-{{ section_standard }}
+{{ item.content }}
 
 Referral:
-{{ consult_draft }}
+{{ input.consult_draft }}

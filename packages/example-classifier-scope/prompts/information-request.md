@@ -10,7 +10,7 @@ Output rule:
 Return only the letter's prose. Do not include a heading, JSON, markdown, bullets, or commentary.
 
 Letter standard:
-{{ letter_standard }}
+{{ item.content }}
 
 Referral:
-{{ consult_draft }}
+{{ input.consult_draft }}

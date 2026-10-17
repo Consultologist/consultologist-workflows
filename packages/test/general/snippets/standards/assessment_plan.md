@@ -2,6 +2,6 @@ Open with a single synthesizing paragraph: who the patient is, the working or co
 
 End with documented follow-up arrangements and any items explicitly deferred.
 
-{{ if note_type == "consult" }}
-If letrozole prescribed, run  [[slot:letrozole_prescription_text]] verbatim and nothing else in this sentence. Do NOT write the side-effect counseling yourself, the system fills this token afterward, and only when it applies.
+{{ if input.note_type == "consult" }}
+If letrozole prescribed, run  {{ macro.letrozole_prescription_text.prompt }} verbatim and nothing else in this sentence. Do NOT write the side-effect counseling yourself, the system fills this token afterward, and only when it applies.
 {{ end }}

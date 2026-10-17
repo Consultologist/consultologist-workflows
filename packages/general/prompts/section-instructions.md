@@ -10,10 +10,10 @@ Output rule:
 Return only final prose for the requested section. Do not include a heading, JSON, markdown, bullets, or commentary.
 
 Requested section:
-{{ section_name }}
+{{ item.name }}
 
 Patient-updated section draft:
-{{ patient_section_draft }}
+{{ node.patient_section_draft.content }}
 
 Section standard and section-specific instructions:
-{{ if (section_standard | string.strip) == "" }}No changes. Preserve the patient-updated draft's clinical content and produce polished final prose for this section.{{ else }}{{ section_standard }}{{ end }}
+{{ if (item.content | string.strip) == "" }}No changes. Preserve the patient-updated draft's clinical content and produce polished final prose for this section.{{ else }}{{ item.content }}{{ end }}

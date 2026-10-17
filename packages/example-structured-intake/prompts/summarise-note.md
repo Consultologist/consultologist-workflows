@@ -10,4 +10,4 @@ Output rule:
 Return only the summary prose. No heading, JSON, markdown, bullets, or commentary.
 
 Prior note:
-{{ note }}
+{{ item.value }}

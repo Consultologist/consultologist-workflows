@@ -1,3 +1,5 @@
+{{ snippet.snomed_tool_guidance.content }}
+
 Extract patient-specific clinical concepts from the draft consult note.
 
 Output only SNOMED concept bullets in these exact forms:
@@ -9,4 +11,4 @@ Include inactive SNOMED concepts when relevant. Include clinically important fin
 Do not include commentary, headings, JSON, or non-bullet lines.
 
 Draft consult note:
-{{ consult_draft | array.join "\n\n---\n\n" }}
+{{ input.consult_draft | array.join "\n\n---\n\n" }}

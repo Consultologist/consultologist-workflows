@@ -1,4 +1,6 @@
-Reconcile a patient-specific trajectory from the validated patient concepts and typical trajectory relevant {{ specialty }}.
+{{ snippet.snomed_tool_guidance.content }}
+
+Reconcile a patient-specific trajectory from the validated patient concepts and typical trajectory relevant {{ input.consult_specialty }}.
 
 Output only SNOMED concept bullets in these exact forms:
 - term (type) - id number
@@ -10,10 +12,10 @@ Include a concise support phrase after the accepted bullet only when needed by a
 Do not include commentary, headings, JSON, or non-bullet lines.
 
 Disease/problem concept:
-{{ problem_concepts }}
+{{ node.identify_problem.content | concept_bullets }}
 
 Validated patient concepts:
-{{ patient_concepts }}
+{{ node.extract_patient_concepts.content | concept_bullets }}
 
 Typical trajectory concepts:
-{{ typical_trajectory_concepts }}
+{{ node.create_typical_trajectory.content | concept_bullets }}
