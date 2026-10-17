@@ -12,4 +12,4 @@ Guardrail:
 Decide from the referral alone. Do not infer facts it does not contain.
 
 Referral:
-{{ referral }}
+{{ input.consult_draft }}

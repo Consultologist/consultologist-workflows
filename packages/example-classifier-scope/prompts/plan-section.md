@@ -10,10 +10,10 @@ Output rule:
 Return only prose for the requested section. Do not include a heading, JSON, markdown, bullets, or commentary.
 
 Requested section:
-{{ section_name }}
+{{ item.name }}
 
 Section standard:
-{{ section_standard }}
+{{ item.content }}
 
 Referral:
-{{ consult_draft }}
+{{ input.consult_draft }}

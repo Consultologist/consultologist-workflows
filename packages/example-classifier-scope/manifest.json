@@ -1,10 +1,10 @@
 {
   "name": "example-classifier-scope",
-  "version": "v2026.08.2",
-  "specVersion": 11,
+  "version": "v2026.10.1",
+  "specVersion": 25,
   "derivedFrom": null,
   "title": "Scope classifier demo",
-  "description": "A demonstration of what specVersion 10 opened: a classifier reads the referral and answers in_scope, out_of_scope or needs_information; the package then produces a plan, a decline letter or a request for further information \u2014 one document, decided at the boundary rather than asked at intake. Not intended for clinical use.",
+  "description": "A demonstration of what specVersion 10 opened: a classifier reads the referral and answers in_scope, out_of_scope or needs_information; the package then produces a plan, a decline letter or a request for further information — one document, decided at the boundary rather than asked at intake. Not intended for clinical use.",
   "tags": [
     "demo",
     "classifier"
@@ -20,143 +20,119 @@
       "required": true
     }
   ],
-  "data": {
-    "plan-sections": "data/plan-sections/",
-    "letter": "data/letter/"
-  },
   "prompts": [
     {
-      "id": "classify-scope",
-      "file": "prompts/classify-scope.md",
-      "variables": [
-        "referral"
-      ]
+      "id": "classify_scope",
+      "file": "prompts/classify-scope.md"
     },
     {
-      "id": "plan-section",
-      "file": "prompts/plan-section.md",
-      "variables": [
-        "consult_draft",
-        "section_name",
-        "section_standard"
-      ]
+      "id": "plan_section",
+      "file": "prompts/plan-section.md"
     },
     {
-      "id": "decline-letter",
-      "file": "prompts/decline-letter.md",
-      "variables": [
-        "consult_draft",
-        "scope",
-        "letter_standard"
-      ]
+      "id": "decline_letter",
+      "file": "prompts/decline-letter.md"
     },
     {
-      "id": "information-request",
-      "file": "prompts/information-request.md",
-      "variables": [
-        "consult_draft",
-        "letter_standard"
-      ]
+      "id": "information_request",
+      "file": "prompts/information-request.md"
     }
   ],
   "macros": [
     {
       "id": "closing",
       "label": "Closing note",
-      "file": "macros/closing.md"
-    }
-  ],
-  "results": [
-    {
-      "id": "plan",
-      "node": "node:assemble-plan",
-      "label": "Plan",
-      "when": "node:scope == in_scope"
-    },
-    {
-      "id": "decline_letter",
-      "node": "node:assemble-decline-letter",
-      "label": "Decline letter",
-      "when": "node:scope == out_of_scope",
-      "macros": [
-        "closing"
-      ],
-      "signature": true
-    },
-    {
-      "id": "information_request",
-      "node": "node:assemble-information-request",
-      "label": "Request for information",
-      "when": "node:scope == needs_information"
+      "file": "macros/closing.md",
+      "instruction": "End the decline letter with {{ macro.closing.content }} as its final paragraph."
     }
   ],
   "nodes": [
     {
       "id": "scope",
-      "kind": "classifier",
       "label": "Is the referral in scope?",
-      "prompt": "classify-scope",
-      "bindings": {
-        "referral": "input:consult_draft"
+      "prompt": "classify_scope",
+      "format": "classification",
+      "with": {
+        "values": [
+          "in_scope",
+          "out_of_scope",
+          "needs_information"
+        ]
       },
-      "values": [
-        "in_scope",
-        "out_of_scope",
-        "needs_information"
-      ]
+      "onInvalid": "fail"
     },
     {
-      "id": "plan-section",
-      "forEach": "data:plan-sections",
+      "id": "plan_section",
+      "forEach": "snippet.plan_sections",
       "label": "Drafting the plan",
-      "prompt": "plan-section",
-      "bindings": {
-        "consult_draft": "input:consult_draft",
-        "section_name": "item:name",
-        "section_standard": "item:content"
-      }
+      "prompt": "plan_section",
+      "format": "prose"
     },
     {
-      "id": "decline-letter",
-      "forEach": "data:letter",
+      "id": "decline_letter",
+      "forEach": "snippet.letter",
       "label": "Drafting the decline letter",
-      "prompt": "decline-letter",
-      "bindings": {
-        "consult_draft": "input:consult_draft",
-        "scope": "node:scope",
-        "letter_standard": "item:content"
-      }
+      "prompt": "decline_letter",
+      "format": "prose"
     },
     {
-      "id": "information-request",
-      "forEach": "data:letter",
+      "id": "information_request",
+      "forEach": "snippet.letter",
       "label": "Drafting the request for information",
-      "prompt": "information-request",
-      "bindings": {
-        "consult_draft": "input:consult_draft",
-        "letter_standard": "item:content"
-      }
+      "prompt": "information_request",
+      "format": "prose"
     },
     {
-      "id": "assemble-plan",
+      "id": "assemble_plan",
       "label": "Assembling the plan",
       "aggregate": [
-        "node:plan-section"
+        "node.plan_section"
       ]
     },
     {
-      "id": "assemble-decline-letter",
+      "id": "assemble_decline_letter",
       "label": "Assembling the decline letter",
       "aggregate": [
-        "node:decline-letter"
+        "node.decline_letter"
       ]
     },
     {
-      "id": "assemble-information-request",
+      "id": "assemble_information_request",
       "label": "Assembling the request for information",
       "aggregate": [
-        "node:information-request"
+        "node.information_request"
       ]
     }
-  ]
+  ],
+  "deliverables": [
+    {
+      "id": "plan",
+      "node": "node.assemble_plan",
+      "label": "Plan",
+      "when": "node.scope.value == \"in_scope\""
+    },
+    {
+      "id": "decline_letter",
+      "node": "node.assemble_decline_letter",
+      "label": "Decline letter",
+      "when": "node.scope.value == \"out_of_scope\"",
+      "macros": [
+        {
+          "id": "closing",
+          "at": "append"
+        }
+      ],
+      "signature": true
+    },
+    {
+      "id": "information_request",
+      "node": "node.assemble_information_request",
+      "label": "Request for information",
+      "when": "node.scope.value == \"needs_information\""
+    }
+  ],
+  "snippets": {
+    "letter": "snippets/letter/",
+    "plan_sections": "snippets/plan_sections/"
+  }
 }
