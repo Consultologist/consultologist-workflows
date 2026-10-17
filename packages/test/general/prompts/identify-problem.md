@@ -1,11 +1,13 @@
-Identify the primary disease or problem concept relevant to {{ specialty }} from the validated patient concepts.
+{{ snippet.snomed_tool_guidance.content }}
+
+Identify the primary disease or problem concept relevant to {{ input.consult_specialty }} from the validated patient concepts.
 
 Output only one or more SNOMED concept bullets in these exact forms:
 - term (type) - id number
 - term [not SNOMED concept]
 - term (type) - id number [not active SNOMED concept]
 
-Prefer the disease/problem driving the {{ specialty }} consult. Do not include commentary, headings, JSON, or non-bullet lines.
+Prefer the disease/problem driving the {{ input.consult_specialty }} consult. Do not include commentary, headings, JSON, or non-bullet lines.
 
 Validated patient concepts:
-{{ patient_concepts }}
+{{ node.extract_patient_concepts.content | concept_bullets }}

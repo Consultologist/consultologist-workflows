@@ -1,195 +1,103 @@
 {
   "name": "test/general",
-  "version": "v2026.10.8",
-  "specVersion": 24,
+  "version": "v2026.10.9",
+  "specVersion": 25,
   "templating": {
     "engine": "scriban",
     "engineVersion": "7.2.5"
   },
   "prompts": [
     {
-      "id": "extract-patient-concepts",
-      "file": "prompts/extract-patient-concepts.md",
-      "variables": [
-        "consult_draft"
-      ]
+      "id": "extract_patient_concepts",
+      "file": "prompts/extract-patient-concepts.md"
     },
     {
-      "id": "identify-problem",
-      "file": "prompts/identify-problem.md",
-      "variables": [
-        "patient_concepts",
-        "specialty"
-      ]
+      "id": "identify_problem",
+      "file": "prompts/identify-problem.md"
     },
     {
-      "id": "create-typical-trajectory",
-      "file": "prompts/create-typical-trajectory.md",
-      "variables": [
-        "problem_concepts",
-        "specialty"
-      ]
+      "id": "create_typical_trajectory",
+      "file": "prompts/create-typical-trajectory.md"
     },
     {
-      "id": "create-patient-trajectory",
-      "file": "prompts/create-patient-trajectory.md",
-      "variables": [
-        "problem_concepts",
-        "patient_concepts",
-        "typical_trajectory_concepts",
-        "specialty"
-      ]
+      "id": "create_patient_trajectory",
+      "file": "prompts/create-patient-trajectory.md"
     },
     {
-      "id": "standard-section-draft",
-      "file": "prompts/standard-section-draft.md",
-      "variables": [
-        "section_name",
-        "patient_trajectory_concepts",
-        "specialty",
-        "note_type"
-      ]
+      "id": "standard_section_draft",
+      "file": "prompts/standard-section-draft.md"
     },
     {
-      "id": "patient-section-draft",
-      "file": "prompts/patient-section-draft.md",
-      "variables": [
-        "standard_section_draft",
-        "consult_draft",
-        "section_name"
-      ]
+      "id": "patient_section_draft",
+      "file": "prompts/patient-section-draft.md"
     },
     {
-      "id": "section-instructions",
-      "file": "prompts/section-instructions.md",
-      "variables": [
-        "patient_section_draft",
-        "section_name",
-        "section_standard",
-        "specialty",
-        "note_type"
-      ]
+      "id": "section_instructions",
+      "file": "prompts/section-instructions.md"
     }
   ],
-  "schemas": {
-    "concept-list": "schemas/concept-list.json"
-  },
   "nodes": [
     {
-      "id": "extract-patient-concepts",
+      "id": "extract_patient_concepts",
       "label": "Extracting clinical concepts",
-      "prompt": "extract-patient-concepts",
-      "bindings": {
-        "consult_draft": "input:consult_draft"
-      },
-      "output": {
-        "schema": "concept-list",
-        "failIfEmpty": "The consult could not be processed because clinical concepts could not be extracted from the draft."
-      },
-      "macros": [
-        "snomed_tool_guidance"
-      ]
+      "prompt": "extract_patient_concepts",
+      "format": "concept_list",
+      "onInvalid": "fail",
+      "failIfEmpty": "The consult could not be processed because clinical concepts could not be extracted from the draft."
     },
     {
-      "id": "identify-problem",
+      "id": "identify_problem",
       "label": "Identifying primary problem",
-      "prompt": "identify-problem",
-      "bindings": {
-        "patient_concepts": "node:extract-patient-concepts",
-        "specialty": "input:consult_specialty"
-      },
-      "output": {
-        "schema": "concept-list",
-        "failIfEmpty": "No valid disease or problem concept was identified."
-      },
-      "macros": [
-        "snomed_tool_guidance"
-      ]
+      "prompt": "identify_problem",
+      "format": "concept_list",
+      "onInvalid": "fail",
+      "failIfEmpty": "No valid disease or problem concept was identified."
     },
     {
-      "id": "create-typical-trajectory",
+      "id": "create_typical_trajectory",
       "label": "Building reference trajectory",
-      "prompt": "create-typical-trajectory",
-      "bindings": {
-        "problem_concepts": "node:identify-problem",
-        "specialty": "input:consult_specialty"
-      },
-      "output": {
-        "schema": "concept-list",
-        "failIfEmpty": "No valid typical trajectory concepts were generated."
-      },
-      "macros": [
-        "snomed_tool_guidance"
-      ]
+      "prompt": "create_typical_trajectory",
+      "format": "concept_list",
+      "onInvalid": "fail",
+      "failIfEmpty": "No valid typical trajectory concepts were generated."
     },
     {
-      "id": "create-patient-trajectory",
+      "id": "create_patient_trajectory",
       "label": "Building patient trajectory",
-      "prompt": "create-patient-trajectory",
-      "bindings": {
-        "problem_concepts": "node:identify-problem",
-        "patient_concepts": "node:extract-patient-concepts",
-        "typical_trajectory_concepts": "node:create-typical-trajectory",
-        "specialty": "input:consult_specialty"
-      },
-      "output": {
-        "schema": "concept-list",
-        "failIfEmpty": "No valid patient trajectory concepts were generated."
-      },
-      "macros": [
-        "snomed_tool_guidance"
-      ]
+      "prompt": "create_patient_trajectory",
+      "format": "concept_list",
+      "onInvalid": "fail",
+      "failIfEmpty": "No valid patient trajectory concepts were generated."
     },
     {
-      "id": "standard-section-draft",
+      "id": "standard_section_draft",
       "label": "Drafting section",
-      "prompt": "standard-section-draft",
-      "bindings": {
-        "section_name": "item:name",
-        "patient_trajectory_concepts": {
-          "from": "node:create-patient-trajectory",
-          "as": "concept-context"
-        },
-        "specialty": "input:consult_specialty",
-        "note_type": "input:note_type"
-      },
-      "forEach": "data:standards"
+      "prompt": "standard_section_draft",
+      "forEach": "snippet.standards",
+      "format": "prose"
     },
     {
-      "id": "patient-section-draft",
+      "id": "patient_section_draft",
       "label": "Applying patient information",
-      "prompt": "patient-section-draft",
-      "bindings": {
-        "standard_section_draft": "node:standard-section-draft",
-        "consult_draft": "input:consult_draft",
-        "section_name": "item:name"
-      },
-      "forEach": "data:standards"
+      "prompt": "patient_section_draft",
+      "forEach": "snippet.standards",
+      "format": "prose"
     },
     {
-      "id": "section-instructions",
+      "id": "section_instructions",
       "label": "Applying section instructions",
-      "prompt": "section-instructions",
-      "bindings": {
-        "patient_section_draft": "node:patient-section-draft",
-        "section_name": "item:name",
-        "section_standard": "item:content",
-        "specialty": "input:consult_specialty",
-        "note_type": "input:note_type"
-      },
-      "forEach": "data:standards"
+      "prompt": "section_instructions",
+      "forEach": "snippet.standards",
+      "format": "prose"
     },
     {
-      "id": "assemble-note",
+      "id": "assemble_note",
       "label": "Assembling note",
       "aggregate": [
-        "node:section-instructions"
+        "node.section_instructions"
       ]
     }
   ],
-  "data": {
-    "standards": "data/standards/"
-  },
   "inputs": [
     {
       "id": "consult_specialty",
@@ -227,36 +135,36 @@
       "items": "text"
     }
   ],
-  "results": [
-    {
-      "id": "consult",
-      "node": "node:assemble-note",
-      "label": "Consultation note",
-      "macros": [
-        {
-          "id": "letrozole_prescription_text",
-          "slot": true
-        },
-        "test"
-      ]
-    }
-  ],
   "tags": [],
   "macros": [
     {
       "id": "letrozole_prescription_text",
       "label": "Letrozole prescription text",
-      "file": "macros/letrozole_prescription_text.md"
+      "file": "macros/letrozole_prescription_text.md",
+      "instruction": "If the plan prescribes letrozole, write {{ macro.letrozole_prescription_text.content }} verbatim where the side-effect counselling belongs in the assessment and plan; otherwise write nothing."
     },
     {
       "id": "test",
       "label": "test",
-      "file": "macros/test.md"
-    },
-    {
-      "id": "snomed_tool_guidance",
-      "label": "SNOMED tool guidance",
-      "file": "macros/snomed_tool_guidance.md"
+      "file": "macros/test.md",
+      "instruction": "Write {{ macro.test.content }} once, as the last line of the note."
     }
-  ]
+  ],
+  "deliverables": [
+    {
+      "id": "consult",
+      "node": "node.assemble_note",
+      "label": "Consultation note",
+      "macros": [
+        {
+          "id": "test",
+          "at": "append"
+        }
+      ]
+    }
+  ],
+  "snippets": {
+    "snomed_tool_guidance": "snippets/snomed_tool_guidance.md",
+    "standards": "snippets/standards/"
+  }
 }
