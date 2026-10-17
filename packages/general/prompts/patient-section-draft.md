@@ -14,10 +14,10 @@ Output rule:
 Return only prose for the requested section. Do not include a heading, JSON, markdown, bullets, or commentary.
 
 Requested section:
-{{ section_name }}
+{{ item.name }}
 
 Standard section draft:
-{{ standard_section_draft }}
+{{ node.standard_section_draft.content }}
 
 Original draft consult note:
-{{ consult_draft }}
+{{ input.consult_draft }}

@@ -1,3 +1,5 @@
+{{ snippet.snomed_tool_guidance.content }}
+
 Build a typical clinical trajectory for the disease/problem concept.
 
 Output only SNOMED concept bullets in these exact forms:
@@ -9,4 +11,4 @@ Include a concise support phrase after the accepted bullet only when needed by a
 Do not include commentary, headings, JSON, or non-bullet lines.
 
 Disease/problem concept:
-{{ problem_concepts }}
+{{ node.identify_problem.content | concept_bullets }}
