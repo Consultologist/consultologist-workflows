@@ -1,6 +1,6 @@
 {
   "name": "example-classifier-scope",
-  "version": "v2026.10.1",
+  "version": "v2026.10.2",
   "specVersion": 25,
   "derivedFrom": null,
   "title": "Scope classifier demo",
@@ -43,7 +43,7 @@
       "id": "closing",
       "label": "Closing note",
       "file": "macros/closing.md",
-      "instruction": "End the decline letter with {{ macro.closing.content }} as its final paragraph."
+      "instruction": "The closing goes at the end of the decline letter, as its final paragraph."
     }
   ],
   "nodes": [
