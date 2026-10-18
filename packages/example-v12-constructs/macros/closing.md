@@ -1,3 +1,3 @@
 Sincerely,
 
-{{profile:signature}}
+{{ profile.signature }}

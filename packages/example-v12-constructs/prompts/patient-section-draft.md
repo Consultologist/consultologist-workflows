@@ -1,8 +1,8 @@
 standard_section_draft block:
-{{ standard_section_draft }}
+{{ node.standard_section_draft.content }}
 
 consult_draft block:
-{{ consult_draft }}
+{{ input.consult_draft }}
 
 section_name block:
-{{ section_name }}
+{{ item.name }}

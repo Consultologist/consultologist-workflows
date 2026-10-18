@@ -1,1 +1,3 @@
-Prepared regarding the consultation of {{ seen_on }}.
+{{ snippet.disclaimer.content }}
+
+Prepared regarding the consultation of {{ input.seen_on }}.
