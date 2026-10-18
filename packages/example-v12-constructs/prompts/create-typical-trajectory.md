@@ -1,2 +1,4 @@
+{{ snippet.snomed_tool_guidance.content }}
+
 problem_concepts block:
-{{ problem_concepts }}
+{{ node.identify_problem.content | concept_bullets }}

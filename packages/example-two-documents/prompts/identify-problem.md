@@ -1,3 +1,5 @@
+{{ snippet.snomed_tool_guidance.content }}
+
 Identify the primary disease or problem concept from the validated patient concepts.
 
 Output only one or more SNOMED concept bullets in these exact forms:
@@ -8,4 +10,4 @@ Output only one or more SNOMED concept bullets in these exact forms:
 Prefer the disease/problem driving the oncology consult. Do not include commentary, headings, JSON, or non-bullet lines.
 
 Validated patient concepts:
-{{ patient_concepts }}
+{{ node.extract_patient_concepts.content | concept_bullets }}

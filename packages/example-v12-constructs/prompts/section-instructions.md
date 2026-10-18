@@ -1,8 +1,8 @@
 patient_section_draft block:
-{{ patient_section_draft }}
+{{ node.patient_section_draft.content }}
 
 section_name block:
-{{ section_name }}
+{{ item.name }}
 
 section_standard block:
-{{ section_standard }}
+{{ item.content }}

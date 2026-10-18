@@ -1,2 +1,4 @@
+{{ snippet.snomed_tool_guidance.content }}
+
 consult_draft block:
-{{ consult_draft }}
+{{ input.consult_draft }}

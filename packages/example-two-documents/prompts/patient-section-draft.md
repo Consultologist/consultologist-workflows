@@ -1,4 +1,4 @@
-You are updating one {{ specialty }} {{ note_type }} section with patient information.
+You are updating one {{ snippet.specialty.content }} {{ snippet.note_type.content }} section with patient information.
 
 Source of truth:
 Use only the clinical facts contained in the original draft consult note below.
@@ -14,10 +14,10 @@ Output rule:
 Return only prose for the requested section. Do not include a heading, JSON, markdown, bullets, or commentary.
 
 Requested section:
-{{ section_name }}
+{{ item.name }}
 
 Standard section draft:
-{{ standard_section_draft }}
+{{ node.standard_section_draft.content }}
 
 Original draft consult note:
-{{ consult_draft }}
+{{ input.consult_draft }}

@@ -1,4 +1,4 @@
-You are writing one standard section of an {{ specialty }} {{ note_type }}.
+You are writing one standard section of an {{ snippet.specialty.content }} {{ snippet.note_type.content }}.
 
 Task:
 Write a standard draft for the requested section using the validated patient trajectory as organizing context.
@@ -10,7 +10,7 @@ Output rule:
 Return only prose for the requested section. Do not include a heading, JSON, markdown, bullets, or commentary.
 
 Requested section:
-{{ section_name }}
+{{ item.name }}
 
 Validated patient trajectory:
-{{ patient_trajectory_concepts }}
+{{ node.create_patient_trajectory.content | concept_context }}
