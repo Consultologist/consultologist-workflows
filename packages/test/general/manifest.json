@@ -1,6 +1,6 @@
 {
   "name": "test/general",
-  "version": "v2026.10.10",
+  "version": "v2026.10.11",
   "specVersion": 25,
   "templating": {
     "engine": "scriban",
@@ -141,13 +141,13 @@
       "id": "letrozole_prescription_text",
       "label": "Letrozole prescription text",
       "file": "macros/letrozole_prescription_text.md",
-      "instruction": "If the plan prescribes letrozole, write {{ macro.letrozole_prescription_text.content }} verbatim where the side-effect counselling belongs in the assessment and plan; otherwise write nothing."
+      "instruction": "If the plan prescribes letrozole, the side-effect counselling goes where it belongs in the assessment and plan; otherwise nothing."
     },
     {
       "id": "test",
       "label": "test",
       "file": "macros/test.md",
-      "instruction": "Write {{ macro.test.content }} once, as the last line of the note."
+      "instruction": "The test line goes once, as the last line of the note."
     }
   ],
   "deliverables": [
