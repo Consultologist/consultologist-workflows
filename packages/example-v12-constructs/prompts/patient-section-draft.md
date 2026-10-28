@@ -5,4 +5,4 @@ consult_draft block:
 {{ input.consult_draft }}
 
 section_name block:
-{{ item.name }}
+{{ item.label }}

@@ -1,7 +1,7 @@
 {
   "name": "example-v12-constructs",
-  "version": "v2026.10.1",
-  "specVersion": 25,
+  "version": "v2026.10.2",
+  "specVersion": 26,
   "derivedFrom": null,
   "title": "The v12 constructs demo",
   "description": "A demonstration of everything specVersion 12 opened: an optional macro the run chooses (with a declared default), a macro placed against a section, a closing macro carrying the profile signature, conditional macros gated on a tone classifier, a template node whose render IS its output, and two checks — the note's passes, while the letter's fixed template text cannot cover the referral's clinical terms and records a deterministic failure. Not intended for clinical use.",
@@ -9,65 +9,11 @@
     "engine": "scriban",
     "engineVersion": "7.2.5"
   },
-  "prompts": [
-    {
-      "id": "extract_patient_concepts",
-      "file": "prompts/extract-patient-concepts.md"
-    },
-    {
-      "id": "identify_problem",
-      "file": "prompts/identify-problem.md"
-    },
-    {
-      "id": "create_typical_trajectory",
-      "file": "prompts/create-typical-trajectory.md"
-    },
-    {
-      "id": "create_patient_trajectory",
-      "file": "prompts/create-patient-trajectory.md"
-    },
-    {
-      "id": "standard_section_draft",
-      "file": "prompts/standard-section-draft.md"
-    },
-    {
-      "id": "patient_section_draft",
-      "file": "prompts/patient-section-draft.md"
-    },
-    {
-      "id": "section_instructions",
-      "file": "prompts/section-instructions.md"
-    },
-    {
-      "id": "classify_tone",
-      "file": "prompts/classify-tone.md"
-    },
-    {
-      "id": "extract_input_terms",
-      "file": "prompts/extract-input-terms.md"
-    },
-    {
-      "id": "extract_note_terms",
-      "file": "prompts/extract-note-terms.md"
-    },
-    {
-      "id": "extract_letter_terms",
-      "file": "prompts/extract-letter-terms.md"
-    },
-    {
-      "id": "header",
-      "file": "prompts/header.md"
-    },
-    {
-      "id": "letter_body",
-      "file": "prompts/letter-body.md"
-    }
-  ],
   "nodes": [
     {
       "id": "extract_patient_concepts",
       "label": "Extracting clinical concepts",
-      "prompt": "extract_patient_concepts",
+      "prompt": "prompts/extract-patient-concepts.md",
       "format": "concept_list",
       "onInvalid": "fail",
       "failIfEmpty": "The consult could not be processed because clinical concepts could not be extracted from the draft."
@@ -75,7 +21,7 @@
     {
       "id": "identify_problem",
       "label": "Identifying primary problem",
-      "prompt": "identify_problem",
+      "prompt": "prompts/identify-problem.md",
       "format": "concept_list",
       "onInvalid": "fail",
       "failIfEmpty": "No valid disease or problem concept was identified."
@@ -83,7 +29,7 @@
     {
       "id": "create_typical_trajectory",
       "label": "Building reference trajectory",
-      "prompt": "create_typical_trajectory",
+      "prompt": "prompts/create-typical-trajectory.md",
       "format": "concept_list",
       "onInvalid": "fail",
       "failIfEmpty": "No valid typical trajectory concepts were generated."
@@ -91,7 +37,7 @@
     {
       "id": "create_patient_trajectory",
       "label": "Building patient trajectory",
-      "prompt": "create_patient_trajectory",
+      "prompt": "prompts/create-patient-trajectory.md",
       "format": "concept_list",
       "onInvalid": "fail",
       "failIfEmpty": "No valid patient trajectory concepts were generated."
@@ -99,36 +45,36 @@
     {
       "id": "standard_section_draft",
       "label": "Drafting section",
-      "prompt": "standard_section_draft",
-      "forEach": "snippet.standards",
+      "prompt": "prompts/standard-section-draft.md",
       "format": "prose"
     },
     {
       "id": "patient_section_draft",
       "label": "Applying patient information",
-      "prompt": "patient_section_draft",
-      "forEach": "snippet.standards",
+      "prompt": "prompts/patient-section-draft.md",
       "format": "prose"
+    },
+    {
+      "id": "standards_section_instructions",
+      "label": "Standards — applying section instructions",
+      "for": "item in snippet.standards",
+      "nodes": [
+        "section_instructions",
+        "patient_section_draft",
+        "standard_section_draft"
+      ],
+      "ret": "node.section_instructions"
     },
     {
       "id": "section_instructions",
       "label": "Applying section instructions",
-      "prompt": "section_instructions",
-      "forEach": "snippet.standards",
+      "prompt": "prompts/section-instructions.md",
       "format": "prose"
-    },
-    {
-      "id": "assemble_note",
-      "label": "Assemble note",
-      "aggregate": [
-        "node.section_instructions",
-        "node.patient_header"
-      ]
     },
     {
       "id": "tone",
       "label": "Reading the referral's tone",
-      "prompt": "classify_tone",
+      "prompt": "prompts/classify-tone.md",
       "format": "classification",
       "with": {
         "values": [
@@ -141,20 +87,20 @@
     {
       "id": "patient_header",
       "label": "Patient header",
-      "prompt": "header",
+      "prompt": "prompts/header.md",
       "format": "rendered"
     },
     {
       "id": "extract_input_terms",
       "label": "Extracting the referral's terms",
-      "prompt": "extract_input_terms",
+      "prompt": "prompts/extract-input-terms.md",
       "format": "concept_list",
       "onInvalid": "fail"
     },
     {
       "id": "extract_note_terms",
       "label": "Extracting the note's terms",
-      "prompt": "extract_note_terms",
+      "prompt": "prompts/extract-note-terms.md",
       "format": "concept_list",
       "onInvalid": "fail"
     },
@@ -170,23 +116,24 @@
       "onInvalid": "fail"
     },
     {
-      "id": "letter_body",
-      "label": "Acknowledgement body",
-      "prompt": "letter_body",
-      "forEach": "snippet.standards",
-      "format": "rendered"
+      "id": "standards_letter_body",
+      "label": "Standards — acknowledgement body",
+      "for": "item in snippet.standards",
+      "nodes": [
+        "letter_body"
+      ],
+      "ret": "node.letter_body"
     },
     {
-      "id": "assemble_letter",
-      "label": "Assembling the acknowledgement",
-      "aggregate": [
-        "node.letter_body"
-      ]
+      "id": "letter_body",
+      "label": "Acknowledgement body",
+      "prompt": "prompts/letter-body.md",
+      "format": "rendered"
     },
     {
       "id": "extract_letter_terms",
       "label": "Extracting the letter's terms",
-      "prompt": "extract_letter_terms",
+      "prompt": "prompts/extract-letter-terms.md",
       "format": "concept_list",
       "onInvalid": "fail"
     },
@@ -293,49 +240,26 @@
     }
   ],
   "tags": [],
-  "macros": [
-    {
-      "id": "formal_note",
-      "label": "Formal closing note",
-      "file": "macros/formal_note.md",
-      "instruction": "When the tone is formal, the formal closing note goes as the sentence before the sign-off."
-    },
-    {
-      "id": "friendly_note",
-      "label": "Friendly closing note",
-      "file": "macros/friendly_note.md",
-      "instruction": "When the tone is friendly, the friendly closing note goes as the sentence before the sign-off."
-    },
-    {
-      "id": "followup",
-      "label": "Follow-up offer",
-      "file": "macros/followup.md",
-      "optional": true,
-      "default": true,
-      "instruction": "The follow-up offer goes as its own paragraph after the plan."
-    },
-    {
-      "id": "closing",
-      "label": "Signature closing",
-      "file": "macros/closing.md",
-      "instruction": "The signature closing goes last, as the sign-off."
-    }
-  ],
+  "macros": {
+    "formal_note": "macros/formal_note.md",
+    "friendly_note": "macros/friendly_note.md",
+    "followup": "macros/followup.md",
+    "closing": "macros/closing.md"
+  },
   "deliverables": [
     {
       "id": "consult",
-      "node": "node.assemble_note",
       "label": "Consultation note",
       "macros": [
         {
           "id": "formal_note",
           "at": "append",
-          "when": "node.tone.value == \"formal\""
+          "if": "node.tone.value == \"formal\""
         },
         {
           "id": "friendly_note",
           "at": "append",
-          "when": "node.tone.value == \"friendly\""
+          "if": "node.tone.value == \"friendly\""
         },
         {
           "id": "followup",
@@ -346,13 +270,19 @@
           "at": "append"
         }
       ],
-      "check": "node.note_coverage"
+      "check": "node.note_coverage",
+      "sources": [
+        "node.standards_section_instructions",
+        "node.patient_header"
+      ]
     },
     {
       "id": "ack_letter",
-      "node": "node.assemble_letter",
       "label": "Acknowledgement letter",
-      "check": "node.letter_coverage"
+      "check": "node.letter_coverage",
+      "sources": [
+        "node.standards_letter_body"
+      ]
     }
   ],
   "snippets": {
