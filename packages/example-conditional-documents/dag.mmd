@@ -1,14 +1,22 @@
 flowchart TD
     snippet_sections(["snippet.sections"])
-    input_encounter_kind(["input:encounter_kind"])
 
-    assemble_consult_note["assemble_consult_note<br/>Assembling the consultation note<br/>aggregate"]
-    consult_note_section -->|"aggregate"| assemble_consult_note
-    assemble_progress_note["assemble_progress_note<br/>Assembling the progress note<br/>aggregate"]
-    progress_note_section -->|"aggregate"| assemble_progress_note
 
-    snippet_sections -->|"forEach"| foreach_snippet_sections
-    subgraph foreach_snippet_sections["per snippet.sections item"]
+    snippet_sections -->|"for"| for_sections_consult_note_section
+    subgraph for_sections_consult_note_section["sections_consult_note_section: per snippet.sections item"]
         consult_note_section["consult_note_section<br/>Drafting the consultation note"]
+    end
+    sections_consult_note_section["sections_consult_note_section<br/>Sections — drafting the consultation note<br/>item in snippet.sections"]
+    consult_note_section -->|"ret"| sections_consult_note_section
+
+    snippet_sections -->|"for"| for_sections_progress_note_section
+    subgraph for_sections_progress_note_section["sections_progress_note_section: per snippet.sections item"]
         progress_note_section["progress_note_section<br/>Drafting the progress note"]
     end
+    sections_progress_note_section["sections_progress_note_section<br/>Sections — drafting the progress note<br/>item in snippet.sections"]
+    progress_note_section -->|"ret"| sections_progress_note_section
+
+    result_consult_note{{"consult_note<br/>Consultation note"}}
+    sections_consult_note_section --> result_consult_note
+    result_progress_note{{"progress_note<br/>Progress note"}}
+    sections_progress_note_section --> result_progress_note
