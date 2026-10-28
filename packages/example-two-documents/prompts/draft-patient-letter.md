@@ -13,10 +13,10 @@ Output rule:
 Return only the letter prose. No JSON, no markdown, no commentary.
 
 Assembled consult sections:
-{{ node.agg_sections.content }}
+{{ node.standards.content }}
 
 Patient trajectory concepts:
-{{ node.create_patient_trajectory.content | concept_context }}
+{{ node.create_patient_trajectory | concept_context }}
 
 Prior notes supplied with the referral:
 {{ if (input.prior_notes | string.strip) == "" }}None were supplied. Write the letter from the sections and concepts alone.{{ else }}{{ input.prior_notes }}{{ end }}

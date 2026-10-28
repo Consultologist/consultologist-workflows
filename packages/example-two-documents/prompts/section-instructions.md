@@ -10,7 +10,7 @@ Output rule:
 Return only final prose for the requested section. Do not include a heading, JSON, markdown, bullets, or commentary.
 
 Requested section:
-{{ item.name }}
+{{ item.label }}
 
 Patient-updated section draft:
 {{ node.patient_section_draft.content }}

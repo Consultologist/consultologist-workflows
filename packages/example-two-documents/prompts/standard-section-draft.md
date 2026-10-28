@@ -10,7 +10,7 @@ Output rule:
 Return only prose for the requested section. Do not include a heading, JSON, markdown, bullets, or commentary.
 
 Requested section:
-{{ item.name }}
+{{ item.label }}
 
 Validated patient trajectory:
-{{ node.create_patient_trajectory.content | concept_context }}
+{{ node.create_patient_trajectory | concept_context }}
