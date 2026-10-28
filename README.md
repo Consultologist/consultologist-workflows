@@ -59,14 +59,19 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
   Until #185 this repo's CI checked structure only, and the README said so —
   the registry accepted what CI waved through, and the failure surfaced later
   at pin resolve as "registry unavailable", against an immutable version.
-- `dag.mmd` is **derived** from `nodes` and `deliverables` by the app's
-  `WorkflowDagDiagram` and never authored by hand. Nothing regenerates or
-  diffs it automatically; regenerate it whenever nodes, bindings,
-  deliverables or their conditions change:
+- `dag.mmd` is **derived** from `nodes` and `deliverables` — and, from
+  specVersion 25, from the reads every prompt, snippet and macro text makes
+  (engine #1227) — by the app's `WorkflowDagDiagram` and never authored by
+  hand. Nothing regenerates or diffs it automatically; regenerate it whenever
+  nodes, bindings, deliverables or their conditions change, or any prompt,
+  snippet or macro read does:
 
   ```
-  dotnet run -v q --file scripts/validate-workflow-package.cs -- <package-dir> --dag > <package-dir>/dag.mmd
+  dotnet run -v q --file scripts/validate-workflow-package.cs -- <package-dir> --dag | sed -n '/^flowchart TD/,$p' > <package-dir>/dag.mmd
   ```
+
+  The `sed` keeps the diagram alone: MSBuild writes restore and compiler
+  warnings to stdout even at `-v q`, ahead of the `flowchart TD` line.
 
   The `-v q` is load-bearing: MSBuild writes build warnings to stdout, so
   a redirect without it captures them into the diagram.
