@@ -14,7 +14,7 @@ Placement markers:
 If the section standard instructs you to output a literal token of the form [[slot:...]], include that token verbatim on its own line. It is a placement marker the system fills afterward, not commentary — the one exception to the output rule above.
 
 Requested section:
-{{ item.name }}
+{{ item.label }}
 
 Patient-updated section draft:
 {{ node.patient_section_draft.content }}

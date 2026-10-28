@@ -10,4 +10,4 @@ Output only one or more SNOMED concept bullets in these exact forms:
 Prefer the disease/problem driving the {{ input.consult_specialty }} consult. Do not include commentary, headings, JSON, or non-bullet lines.
 
 Validated patient concepts:
-{{ node.extract_patient_concepts.content | concept_bullets }}
+{{ node.extract_patient_concepts | concept_bullets }}
