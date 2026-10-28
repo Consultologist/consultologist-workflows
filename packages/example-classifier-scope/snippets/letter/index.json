@@ -1,14 +1,6 @@
-{
-  "fields": [
-    "id",
-    "name",
-    "content"
-  ],
-  "items": [
-    {
-      "id": "letter",
-      "name": "Letter",
-      "file": "letter.md"
-    }
-  ]
-}
+[
+  {
+    "id": "letter",
+    "file": "letter.md"
+  }
+]
