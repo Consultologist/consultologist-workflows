@@ -1,8 +1,10 @@
 flowchart TD
     snippet_plan_sections(["snippet.plan_sections"])
     snippet_letter(["snippet.letter"])
+    input_consult_draft(["input.consult_draft"])
 
     scope["scope<br/>Is the referral in scope?"]
+    input_consult_draft --> scope
 
     snippet_plan_sections -->|"for"| for_plan_sections
     subgraph for_plan_sections["plan_sections: per snippet.plan_sections item"]
@@ -10,6 +12,7 @@ flowchart TD
     end
     plan_sections["plan_sections<br/>Plan sections<br/>item in snippet.plan_sections"]
     plan_section -->|"ret"| plan_sections
+    input_consult_draft --> plan_section
 
     snippet_letter -->|"for"| for_letter_decline_letter
     subgraph for_letter_decline_letter["letter_decline_letter: per snippet.letter item"]
@@ -17,6 +20,8 @@ flowchart TD
     end
     letter_decline_letter["letter_decline_letter<br/>Letter — drafting the decline letter<br/>item in snippet.letter"]
     decline_letter -->|"ret"| letter_decline_letter
+    scope -->|"value"| decline_letter
+    input_consult_draft --> decline_letter
 
     snippet_letter -->|"for"| for_letter_information_request
     subgraph for_letter_information_request["letter_information_request: per snippet.letter item"]
@@ -24,6 +29,7 @@ flowchart TD
     end
     letter_information_request["letter_information_request<br/>Letter — drafting the request for information<br/>item in snippet.letter"]
     information_request -->|"ret"| letter_information_request
+    input_consult_draft --> information_request
 
     result_plan{{"plan<br/>Plan"}}
     plan_sections --> result_plan
