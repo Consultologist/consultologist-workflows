@@ -84,6 +84,18 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
   validator's verdict. What it cannot write it names as errors: a macro that
   is still placed on an output needs an `instruction`, a custom format needs a
   description. Make those edits, re-run the validator, bump the CalVer, tag.
+- **Migrating a 25 package to specVersion 26** is the same runner's second
+  stage (`--to 26`): the library's 25 → 26 rewriter folds each aggregated fan
+  into a `for` node, keys every gate `if`, names each node's prompt file,
+  moves a snippet's or macro's label, instruction and gate into the file's
+  JSON header (a snippet that had no label gets one invented from its id,
+  named in a notice — review it), and writes the files, `manifest.json` and
+  `dag.mmd` once the 26 package validates:
+
+  ```
+  dotnet run -v q --file scripts/migrate-workflow-package.cs -- <package-dir> --to 26
+  dotnet run -v q --file scripts/migrate-workflow-package.cs -- <package-dir> --to 26 --write
+  ```
 
 ## Publishing (CI-only)
 
