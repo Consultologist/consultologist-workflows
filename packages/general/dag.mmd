@@ -5,12 +5,15 @@ flowchart TD
     identify_problem["identify_problem<br/>Identifying primary problem"]
     create_typical_trajectory["create_typical_trajectory<br/>Building reference trajectory"]
     create_patient_trajectory["create_patient_trajectory<br/>Building patient trajectory"]
-    assemble_note["assemble_note<br/>Assembling note<br/>aggregate"]
-    section_instructions -->|"aggregate"| assemble_note
 
-    snippet_standards -->|"forEach"| foreach_snippet_standards
-    subgraph foreach_snippet_standards["per snippet.standards item"]
-        standard_section_draft["standard_section_draft<br/>Drafting section"]
-        patient_section_draft["patient_section_draft<br/>Applying patient information"]
+    snippet_standards -->|"for"| for_standards
+    subgraph for_standards["standards: per snippet.standards item"]
         section_instructions["section_instructions<br/>Applying section instructions"]
+        patient_section_draft["patient_section_draft<br/>Applying patient information"]
+        standard_section_draft["standard_section_draft<br/>Drafting section"]
     end
+    standards["standards<br/>Standards<br/>item in snippet.standards"]
+    section_instructions -->|"ret"| standards
+
+    result_consult{{"consult<br/>Consultation note"}}
+    standards --> result_consult
