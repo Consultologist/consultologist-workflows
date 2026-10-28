@@ -10,7 +10,7 @@ Output rule:
 Return only prose for the requested section. No heading, JSON, markdown, bullets, or commentary.
 
 Requested section:
-{{ item.name }}
+{{ item.label }}
 
 Section standard:
 {{ item.content }}
