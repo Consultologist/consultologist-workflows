@@ -66,23 +66,40 @@ jobs:
           missing = []
           for p in m.get("prompts", []):
               if not os.path.exists(os.path.join(d, p["file"])): missing.append(p["file"])
+          # package-format v26: prompts[] is retired — a node names its prompt file by path.
+          for node in m.get("nodes") or []:
+              prompt = node.get("prompt")
+              if isinstance(prompt, str) and "/" in prompt and not os.path.exists(os.path.join(d, prompt)):
+                  missing.append(prompt)
           for f in (m.get("preludes") or {}).values():
               if not os.path.exists(os.path.join(d, f)): missing.append(f)
           for f in (m.get("schemas") or {}).values():
               if not os.path.exists(os.path.join(d, f)): missing.append(f)
-          for macro in m.get("macros") or []:
-              if not os.path.exists(os.path.join(d, macro["file"])): missing.append(macro["file"])
+          # A folder's index: the v26 ordered list [{ id, file }], or the ≤25 { items: [...] }.
+          def folder_items(index):
+              return index if isinstance(index, list) else index.get("items", [])
+          def check_folder(val):
+              idx = os.path.join(d, val, "index.json")
+              assert os.path.exists(idx), f"missing {val}index.json"
+              for item in folder_items(json.load(open(idx))):
+                  if "file" in item and not os.path.exists(os.path.join(d, val, item["file"])):
+                      missing.append(val + item["file"])
+          # macros: a list of { id, file } up to v25; at v26 a map of id to file (or "<dir>/" — a
+          # folder of macro items, indexed like a snippet folder).
+          macros = m.get("macros") or []
+          macro_files = macros.values() if isinstance(macros, dict) else [macro["file"] for macro in macros]
+          for val in macro_files:
+              if val.endswith("/"):
+                  check_folder(val)
+              elif not os.path.exists(os.path.join(d, val)):
+                  missing.append(val)
           # package-format v25: formats[].file under formats/; data renamed snippets
           # (the same shape: a folder key ends in / and holds index.json + item files).
           for fmt in m.get("formats") or []:
               if not os.path.exists(os.path.join(d, fmt["file"])): missing.append(fmt["file"])
           for key, val in {**(m.get("data") or {}), **(m.get("snippets") or {})}.items():
               if val.endswith("/"):
-                  idx = os.path.join(d, val, "index.json")
-                  assert os.path.exists(idx), f"missing {val}index.json"
-                  for item in json.load(open(idx))["items"]:
-                      if "file" in item and not os.path.exists(os.path.join(d, val, item["file"])):
-                          missing.append(val + item["file"])
+                  check_folder(val)
               elif not os.path.exists(os.path.join(d, val)):
                   missing.append(val)
           assert not missing, f"files referenced but absent: {missing}"

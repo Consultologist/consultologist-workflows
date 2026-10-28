@@ -12,10 +12,10 @@ Include a concise support phrase after the accepted bullet only when needed by a
 Do not include commentary, headings, JSON, or non-bullet lines.
 
 Disease/problem concept:
-{{ node.identify_problem.content | concept_bullets }}
+{{ node.identify_problem | concept_bullets }}
 
 Validated patient concepts:
-{{ node.extract_patient_concepts.content | concept_bullets }}
+{{ node.extract_patient_concepts | concept_bullets }}
 
 Typical trajectory concepts:
-{{ node.create_typical_trajectory.content | concept_bullets }}
+{{ node.create_typical_trajectory | concept_bullets }}

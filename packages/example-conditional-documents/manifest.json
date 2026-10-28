@@ -1,7 +1,7 @@
 {
   "name": "example-conditional-documents",
-  "version": "v2026.10.1",
-  "specVersion": 25,
+  "version": "v2026.10.2",
+  "specVersion": 26,
   "derivedFrom": null,
   "templating": {
     "engine": "scriban",
@@ -36,59 +36,55 @@
       "type": "boolean"
     }
   ],
-  "prompts": [
-    {
-      "id": "consult_note_section",
-      "file": "prompts/consult-note-section.md"
-    },
-    {
-      "id": "progress_note_section",
-      "file": "prompts/progress-note-section.md"
-    }
-  ],
   "nodes": [
     {
+      "id": "sections_consult_note_section",
+      "label": "Sections — drafting the consultation note",
+      "for": "item in snippet.sections",
+      "nodes": [
+        "consult_note_section"
+      ],
+      "ret": "node.consult_note_section"
+    },
+    {
       "id": "consult_note_section",
-      "forEach": "snippet.sections",
       "label": "Drafting the consultation note",
-      "prompt": "consult_note_section",
+      "prompt": "prompts/consult-note-section.md",
       "format": "prose"
+    },
+    {
+      "id": "sections_progress_note_section",
+      "label": "Sections — drafting the progress note",
+      "for": "item in snippet.sections",
+      "nodes": [
+        "progress_note_section"
+      ],
+      "ret": "node.progress_note_section"
     },
     {
       "id": "progress_note_section",
-      "forEach": "snippet.sections",
       "label": "Drafting the progress note",
-      "prompt": "progress_note_section",
+      "prompt": "prompts/progress-note-section.md",
       "format": "prose"
-    },
-    {
-      "id": "assemble_consult_note",
-      "label": "Assembling the consultation note",
-      "aggregate": [
-        "node.consult_note_section"
-      ]
-    },
-    {
-      "id": "assemble_progress_note",
-      "label": "Assembling the progress note",
-      "aggregate": [
-        "node.progress_note_section"
-      ]
     }
   ],
   "tags": [],
   "deliverables": [
     {
       "id": "consult_note",
-      "node": "node.assemble_consult_note",
       "label": "Consultation note",
-      "when": "input.encounter_kind == \"new_patient\""
+      "sources": [
+        "node.sections_consult_note_section"
+      ],
+      "if": "input.encounter_kind == \"new_patient\""
     },
     {
       "id": "progress_note",
-      "node": "node.assemble_progress_note",
       "label": "Progress note",
-      "when": "input.encounter_kind == \"follow_up\""
+      "sources": [
+        "node.sections_progress_note_section"
+      ],
+      "if": "input.encounter_kind == \"follow_up\""
     }
   ],
   "snippets": {

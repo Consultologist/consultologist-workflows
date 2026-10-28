@@ -121,11 +121,14 @@ fi
 # macros/. Until 2026-10-08 this script never uploaded them, so a published
 # package that declared any resolved to a version missing its macro files
 # (example-v12-constructs@v2026.09.1 in the public registry is such a version).
+# package-format v26: a macro may be a folder (macros/<dir>/index.json + item
+# files), so the upload is recursive, as snippets are.
 if [[ -d "$PACKAGE_DIR/macros" ]]; then
-	for f in "$PACKAGE_DIR"/macros/*.md; do
+	while IFS= read -r -d '' f; do
+		rel="${f#"$PACKAGE_DIR"/}"
 		az storage blob upload "${AUTH[@]}" --container-name "$CONTAINER" \
-			--file "$f" --name "$NAME/$VERSION/macros/$(basename "$f")" --output none
-	done
+			--file "$f" --name "$NAME/$VERSION/$rel" --output none
+	done < <(find "$PACKAGE_DIR/macros" -type f -print0)
 fi
 
 # Data collections and scalars upload recursively, preserving collection-relative

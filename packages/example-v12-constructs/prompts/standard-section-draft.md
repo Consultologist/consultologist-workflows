@@ -1,5 +1,5 @@
 section_name block:
-{{ item.name }}
+{{ item.label }}
 
 patient_trajectory_concepts block:
-{{ node.create_patient_trajectory.content | concept_context }}
+{{ node.create_patient_trajectory | concept_context }}

@@ -1,1 +1,4 @@
+{
+  "label": "Specialty"
+}
 oncology

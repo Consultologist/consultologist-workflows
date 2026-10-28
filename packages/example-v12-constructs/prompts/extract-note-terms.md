@@ -1,1 +1,1 @@
-Extract the clinical terms as concept-list JSON: {{ node.assemble_note.content }}
+Extract the clinical terms as concept-list JSON: {{ deliverable.consult.content }}

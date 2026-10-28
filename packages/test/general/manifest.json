@@ -1,46 +1,16 @@
 {
   "name": "test/general",
-  "version": "v2026.10.11",
-  "specVersion": 25,
+  "version": "v2026.10.12",
+  "specVersion": 26,
   "templating": {
     "engine": "scriban",
     "engineVersion": "7.2.5"
   },
-  "prompts": [
-    {
-      "id": "extract_patient_concepts",
-      "file": "prompts/extract-patient-concepts.md"
-    },
-    {
-      "id": "identify_problem",
-      "file": "prompts/identify-problem.md"
-    },
-    {
-      "id": "create_typical_trajectory",
-      "file": "prompts/create-typical-trajectory.md"
-    },
-    {
-      "id": "create_patient_trajectory",
-      "file": "prompts/create-patient-trajectory.md"
-    },
-    {
-      "id": "standard_section_draft",
-      "file": "prompts/standard-section-draft.md"
-    },
-    {
-      "id": "patient_section_draft",
-      "file": "prompts/patient-section-draft.md"
-    },
-    {
-      "id": "section_instructions",
-      "file": "prompts/section-instructions.md"
-    }
-  ],
   "nodes": [
     {
       "id": "extract_patient_concepts",
       "label": "Extracting clinical concepts",
-      "prompt": "extract_patient_concepts",
+      "prompt": "prompts/extract-patient-concepts.md",
       "format": "concept_list",
       "onInvalid": "fail",
       "failIfEmpty": "The consult could not be processed because clinical concepts could not be extracted from the draft."
@@ -48,7 +18,7 @@
     {
       "id": "identify_problem",
       "label": "Identifying primary problem",
-      "prompt": "identify_problem",
+      "prompt": "prompts/identify-problem.md",
       "format": "concept_list",
       "onInvalid": "fail",
       "failIfEmpty": "No valid disease or problem concept was identified."
@@ -56,7 +26,7 @@
     {
       "id": "create_typical_trajectory",
       "label": "Building reference trajectory",
-      "prompt": "create_typical_trajectory",
+      "prompt": "prompts/create-typical-trajectory.md",
       "format": "concept_list",
       "onInvalid": "fail",
       "failIfEmpty": "No valid typical trajectory concepts were generated."
@@ -64,7 +34,7 @@
     {
       "id": "create_patient_trajectory",
       "label": "Building patient trajectory",
-      "prompt": "create_patient_trajectory",
+      "prompt": "prompts/create-patient-trajectory.md",
       "format": "concept_list",
       "onInvalid": "fail",
       "failIfEmpty": "No valid patient trajectory concepts were generated."
@@ -72,30 +42,31 @@
     {
       "id": "standard_section_draft",
       "label": "Drafting section",
-      "prompt": "standard_section_draft",
-      "forEach": "snippet.standards",
+      "prompt": "prompts/standard-section-draft.md",
       "format": "prose"
     },
     {
       "id": "patient_section_draft",
       "label": "Applying patient information",
-      "prompt": "patient_section_draft",
-      "forEach": "snippet.standards",
+      "prompt": "prompts/patient-section-draft.md",
       "format": "prose"
+    },
+    {
+      "id": "standards",
+      "label": "Standards",
+      "for": "item in snippet.standards",
+      "nodes": [
+        "section_instructions",
+        "patient_section_draft",
+        "standard_section_draft"
+      ],
+      "ret": "node.section_instructions"
     },
     {
       "id": "section_instructions",
       "label": "Applying section instructions",
-      "prompt": "section_instructions",
-      "forEach": "snippet.standards",
+      "prompt": "prompts/section-instructions.md",
       "format": "prose"
-    },
-    {
-      "id": "assemble_note",
-      "label": "Assembling note",
-      "aggregate": [
-        "node.section_instructions"
-      ]
     }
   ],
   "inputs": [
@@ -136,30 +107,22 @@
     }
   ],
   "tags": [],
-  "macros": [
-    {
-      "id": "letrozole_prescription_text",
-      "label": "Letrozole prescription text",
-      "file": "macros/letrozole_prescription_text.md",
-      "instruction": "If the plan prescribes letrozole, the side-effect counselling goes where it belongs in the assessment and plan; otherwise nothing."
-    },
-    {
-      "id": "test",
-      "label": "test",
-      "file": "macros/test.md",
-      "instruction": "The test line goes once, as the last line of the note."
-    }
-  ],
+  "macros": {
+    "letrozole_prescription_text": "macros/letrozole_prescription_text.md",
+    "test": "macros/test.md"
+  },
   "deliverables": [
     {
       "id": "consult",
-      "node": "node.assemble_note",
       "label": "Consultation note",
       "macros": [
         {
           "id": "test",
           "at": "append"
         }
+      ],
+      "sources": [
+        "node.standards"
       ]
     }
   ],

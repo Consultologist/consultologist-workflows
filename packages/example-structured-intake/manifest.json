@@ -1,7 +1,7 @@
 {
   "name": "example-structured-intake",
-  "version": "v2026.10.1",
-  "specVersion": 25,
+  "version": "v2026.10.2",
+  "specVersion": 26,
   "derivedFrom": null,
   "title": "Structured intake demo",
   "description": "A demonstration of what specVersion 9 opened: an array of prior notes fanned per element (leave it empty to see the empty-fan refusal), a patient object read by path, a number driving an ordering comparison, and a deliverable gated on count(). Not intended for clinical use.",
@@ -56,128 +56,121 @@
       "type": "number"
     }
   ],
-  "prompts": [
-    {
-      "id": "note_section",
-      "file": "prompts/note-section.md"
-    },
-    {
-      "id": "senior_review_section",
-      "file": "prompts/senior-review-section.md"
-    },
-    {
-      "id": "long_stay_section",
-      "file": "prompts/long-stay-section.md"
-    },
-    {
-      "id": "summarise_note",
-      "file": "prompts/summarise-note.md"
-    },
-    {
-      "id": "index_note",
-      "file": "prompts/index-note.md"
-    }
-  ],
   "nodes": [
     {
+      "id": "sections_note_section",
+      "label": "Sections — drafting the note",
+      "for": "item in snippet.sections",
+      "nodes": [
+        "note_section"
+      ],
+      "ret": "node.note_section"
+    },
+    {
       "id": "note_section",
-      "forEach": "snippet.sections",
       "label": "Drafting the note",
-      "prompt": "note_section",
+      "prompt": "prompts/note-section.md",
       "format": "prose"
+    },
+    {
+      "id": "sections_senior_review_section",
+      "label": "Sections — drafting the senior review request",
+      "for": "item in snippet.sections",
+      "nodes": [
+        "senior_review_section"
+      ],
+      "ret": "node.senior_review_section"
     },
     {
       "id": "senior_review_section",
-      "forEach": "snippet.sections",
       "label": "Drafting the senior review request",
-      "prompt": "senior_review_section",
+      "prompt": "prompts/senior-review-section.md",
       "format": "prose"
+    },
+    {
+      "id": "sections_long_stay_section",
+      "label": "Sections — drafting the long-stay summary",
+      "for": "item in snippet.sections",
+      "nodes": [
+        "long_stay_section"
+      ],
+      "ret": "node.long_stay_section"
     },
     {
       "id": "long_stay_section",
-      "forEach": "snippet.sections",
       "label": "Drafting the long-stay summary",
-      "prompt": "long_stay_section",
+      "prompt": "prompts/long-stay-section.md",
       "format": "prose"
+    },
+    {
+      "id": "prior_notes_summarise_note",
+      "label": "Prior notes — summarising a prior note",
+      "for": "item in input.prior_notes",
+      "nodes": [
+        "summarise_note"
+      ],
+      "ret": "node.summarise_note"
     },
     {
       "id": "summarise_note",
-      "forEach": "input.prior_notes",
       "label": "Summarising a prior note",
-      "prompt": "summarise_note",
+      "prompt": "prompts/summarise-note.md",
       "format": "prose"
     },
     {
-      "id": "assemble_note",
-      "label": "Assembling the consultation note",
-      "aggregate": [
-        "node.note_section"
-      ]
-    },
-    {
-      "id": "assemble_senior_review",
-      "label": "Assembling the senior review request",
-      "aggregate": [
-        "node.senior_review_section"
-      ]
-    },
-    {
-      "id": "assemble_long_stay",
-      "label": "Assembling the long-stay summary",
-      "aggregate": [
-        "node.long_stay_section"
-      ]
+      "id": "prior_notes_index_note",
+      "label": "Prior notes — indexing a prior note",
+      "for": "item in input.prior_notes",
+      "nodes": [
+        "index_note"
+      ],
+      "ret": "node.index_note"
     },
     {
       "id": "index_note",
-      "forEach": "input.prior_notes",
       "label": "Indexing a prior note",
-      "prompt": "index_note",
+      "prompt": "prompts/index-note.md",
       "format": "prose"
-    },
-    {
-      "id": "assemble_digest",
-      "label": "Assembling the prior-notes digest",
-      "aggregate": [
-        "node.summarise_note"
-      ]
-    },
-    {
-      "id": "assemble_index",
-      "label": "Assembling the prior-notes index",
-      "aggregate": [
-        "node.index_note"
-      ]
     }
   ],
   "deliverables": [
     {
       "id": "note",
-      "node": "node.assemble_note",
-      "label": "Consultation note"
+      "label": "Consultation note",
+      "sources": [
+        "node.sections_note_section"
+      ]
     },
     {
       "id": "senior_review",
-      "node": "node.assemble_senior_review",
       "label": "Senior review request",
-      "when": "input.patient.age >= 65"
+      "sources": [
+        "node.sections_senior_review_section"
+      ],
+      "if": "input.patient.age >= 65"
     },
     {
       "id": "long_stay_summary",
-      "node": "node.assemble_long_stay",
       "label": "Long-stay summary",
-      "when": "input.length_of_stay > 7"
+      "sources": [
+        "node.sections_long_stay_section"
+      ],
+      "if": "input.length_of_stay > 7"
     },
     {
       "id": "notes_digest",
-      "node": "node.assemble_digest",
-      "label": "Prior-notes digest"
+      "label": "Prior-notes digest",
+      "sources": [
+        "node.prior_notes_summarise_note"
+      ]
     },
     {
       "id": "notes_index",
-      "node": "node.assemble_index",
       "label": "Prior-notes index",
-      "when": "(input.prior_notes | array.size) > 2"
+      "sources": [
+        "node.prior_notes_index_note"
+      ],
+      "if": "(input.prior_notes | array.size) > 2"
     }
   ],
   "snippets": {
