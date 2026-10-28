@@ -1,5 +1,8 @@
 flowchart TD
     snippet_sections(["snippet.sections"])
+    input_seen_on(["input.seen_on"])
+    input_include_billing(["input.include_billing"])
+    input_consult_draft(["input.consult_draft"])
 
 
     snippet_sections -->|"for"| for_sections_consult_note_section
@@ -8,6 +11,9 @@ flowchart TD
     end
     sections_consult_note_section["sections_consult_note_section<br/>Sections — drafting the consultation note<br/>item in snippet.sections"]
     consult_note_section -->|"ret"| sections_consult_note_section
+    input_seen_on --> consult_note_section
+    input_include_billing --> consult_note_section
+    input_consult_draft --> consult_note_section
 
     snippet_sections -->|"for"| for_sections_progress_note_section
     subgraph for_sections_progress_note_section["sections_progress_note_section: per snippet.sections item"]
@@ -15,6 +21,9 @@ flowchart TD
     end
     sections_progress_note_section["sections_progress_note_section<br/>Sections — drafting the progress note<br/>item in snippet.sections"]
     progress_note_section -->|"ret"| sections_progress_note_section
+    input_seen_on --> progress_note_section
+    input_include_billing --> progress_note_section
+    input_consult_draft --> progress_note_section
 
     result_consult_note{{"consult_note<br/>Consultation note"}}
     sections_consult_note_section --> result_consult_note

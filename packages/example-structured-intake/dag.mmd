@@ -1,6 +1,9 @@
 flowchart TD
     snippet_sections(["snippet.sections"])
     input_prior_notes(["input.prior_notes"])
+    input_patient(["input.patient"])
+    input_consult_draft(["input.consult_draft"])
+    input_length_of_stay(["input.length_of_stay"])
 
 
     snippet_sections -->|"for"| for_sections_note_section
@@ -9,6 +12,8 @@ flowchart TD
     end
     sections_note_section["sections_note_section<br/>Sections — drafting the note<br/>item in snippet.sections"]
     note_section -->|"ret"| sections_note_section
+    input_patient --> note_section
+    input_consult_draft --> note_section
 
     snippet_sections -->|"for"| for_sections_senior_review_section
     subgraph for_sections_senior_review_section["sections_senior_review_section: per snippet.sections item"]
@@ -16,6 +21,8 @@ flowchart TD
     end
     sections_senior_review_section["sections_senior_review_section<br/>Sections — drafting the senior review request<br/>item in snippet.sections"]
     senior_review_section -->|"ret"| sections_senior_review_section
+    input_patient --> senior_review_section
+    input_consult_draft --> senior_review_section
 
     snippet_sections -->|"for"| for_sections_long_stay_section
     subgraph for_sections_long_stay_section["sections_long_stay_section: per snippet.sections item"]
@@ -23,6 +30,8 @@ flowchart TD
     end
     sections_long_stay_section["sections_long_stay_section<br/>Sections — drafting the long-stay summary<br/>item in snippet.sections"]
     long_stay_section -->|"ret"| sections_long_stay_section
+    input_length_of_stay --> long_stay_section
+    input_consult_draft --> long_stay_section
 
     input_prior_notes -->|"for"| for_prior_notes_summarise_note
     subgraph for_prior_notes_summarise_note["prior_notes_summarise_note: per input.prior_notes item"]
