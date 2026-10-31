@@ -9,7 +9,7 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
 | Package | What it is |
 |---|---|
 | `general` | The production consult workflow: one input, one assembled note. |
-| `test/general` | The `general` workflow as the editor evolves it, at the newest format (specVersion 26): a nested name (`packages/test/general`), the SNOMED tool guidance read inline as a **snippet** by the four concept prompts (a migrated prelude), a slot-placed macro and an appended one on the note. A proving ground for the current format, not a clinical release. |
+| `test/general` | The `general` workflow as the editor evolves it, at the newest format (specVersion 27): a nested name (`packages/test/general`), the SNOMED tool guidance read inline as a **snippet** by the four concept prompts (a migrated prelude), the letrozole counselling instruction read inline through the `assessment_plan` standards item (`{{ macro.letrozole_prescription_text.prompt }}`), and one macro appended to the note. A proving ground for the current format, not a clinical release. |
 | `example-two-documents` | A demonstration of what specVersion 7 opened — two declared inputs (one optional) and two deliverables. Not intended for clinical use. |
 | `example-conditional-documents` | A demonstration of what specVersion 8 opened — a typed date, an enum, a boolean, and two deliverables firing on different values of one *optional* enum, so leaving it unanswered produces nothing and the job is refused at start. Not intended for clinical use. |
 | `example-structured-intake` | A demonstration of what specVersion 9 opened — an array of prior notes fanned per element, a patient object read by path (`patient.age >= 65`), a number driving an ordering comparison, an unconditional digest written only from the notes, and an index gated on `count()`. The fanned input is *optional* on purpose: leaving it empty shows the empty-fan refusal and the Failed job record it leaves — the digest has nothing to be written from. Not intended for clinical use. |
@@ -103,6 +103,19 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
   ```
   dotnet run -v q --file scripts/migrate-workflow-package.cs -- <package-dir> --to 26
   dotnet run -v q --file scripts/migrate-workflow-package.cs -- <package-dir> --to 26 --write
+  ```
+- **Raising a 26 package to specVersion 27** is the runner's third stage
+  (`--to 27`): a raise, not a rewrite — 27 only permits what 26 refused (a
+  flow node inside a `for`, `item.value.<field>` as a case subject), so the
+  library's `WorkflowPackageVersionRaise` moves `specVersion` and every file
+  stays. The write touches `manifest.json` and `dag.mmd` alone and does not
+  bump the CalVer; bump `version` by hand, re-run the validator, tag. The
+  runner draws `dag.mmd` as `--dag` draws it, reads included
+  (Consultologist-Blazor#1244); for a raise it comes back unchanged:
+
+  ```
+  dotnet run -v q --file scripts/migrate-workflow-package.cs -- <package-dir> --to 27
+  dotnet run -v q --file scripts/migrate-workflow-package.cs -- <package-dir> --to 27 --write
   ```
 
 ## Publishing (CI-only)

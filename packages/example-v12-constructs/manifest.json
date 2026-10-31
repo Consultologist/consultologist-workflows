@@ -1,10 +1,10 @@
 {
   "name": "example-v12-constructs",
-  "version": "v2026.10.2",
-  "specVersion": 26,
+  "version": "v2026.10.3",
+  "specVersion": 27,
   "derivedFrom": null,
   "title": "The v12 constructs demo",
-  "description": "A demonstration of everything specVersion 12 opened: an optional macro the run chooses (with a declared default), a macro placed against a section, a closing macro carrying the profile signature, conditional macros gated on a tone classifier, a template node whose render IS its output, and two checks — the note's passes, while the letter's fixed template text cannot cover the referral's clinical terms and records a deterministic failure. Not intended for clinical use.",
+  "description": "A demonstration of everything specVersion 12 opened: an optional macro the run chooses (with a declared default), a macro placed against a section, a closing macro carrying the profile signature, conditional macros gated on a tone classifier, a template node whose render IS its output, and two checks \u2014 the note\u0027s passes, while the letter\u0027s fixed template text cannot cover the referral\u0027s clinical terms and records a deterministic failure. Not intended for clinical use.",
   "templating": {
     "engine": "scriban",
     "engineVersion": "7.2.5"
@@ -56,7 +56,7 @@
     },
     {
       "id": "standards_section_instructions",
-      "label": "Standards — applying section instructions",
+      "label": "Standards \u2014 applying section instructions",
       "for": "item in snippet.standards",
       "nodes": [
         "section_instructions",
@@ -73,7 +73,7 @@
     },
     {
       "id": "tone",
-      "label": "Reading the referral's tone",
+      "label": "Reading the referral\u0027s tone",
       "prompt": "prompts/classify-tone.md",
       "format": "classification",
       "with": {
@@ -92,14 +92,14 @@
     },
     {
       "id": "extract_input_terms",
-      "label": "Extracting the referral's terms",
+      "label": "Extracting the referral\u0027s terms",
       "prompt": "prompts/extract-input-terms.md",
       "format": "concept_list",
       "onInvalid": "fail"
     },
     {
       "id": "extract_note_terms",
-      "label": "Extracting the note's terms",
+      "label": "Extracting the note\u0027s terms",
       "prompt": "prompts/extract-note-terms.md",
       "format": "concept_list",
       "onInvalid": "fail"
@@ -117,7 +117,7 @@
     },
     {
       "id": "standards_letter_body",
-      "label": "Standards — acknowledgement body",
+      "label": "Standards \u2014 acknowledgement body",
       "for": "item in snippet.standards",
       "nodes": [
         "letter_body"
@@ -132,7 +132,7 @@
     },
     {
       "id": "extract_letter_terms",
-      "label": "Extracting the letter's terms",
+      "label": "Extracting the letter\u0027s terms",
       "prompt": "prompts/extract-letter-terms.md",
       "format": "concept_list",
       "onInvalid": "fail"
@@ -144,7 +144,7 @@
       "with": {
         "of": "node.extract_input_terms",
         "in": "node.extract_letter_terms",
-        "failWith": "The acknowledgement does not cover the referral's clinical terms."
+        "failWith": "The acknowledgement does not cover the referral\u0027s clinical terms."
       },
       "onInvalid": "fail"
     }
@@ -254,12 +254,12 @@
         {
           "id": "formal_note",
           "at": "append",
-          "if": "node.tone.value == \"formal\""
+          "if": "node.tone.value == \u0022formal\u0022"
         },
         {
           "id": "friendly_note",
           "at": "append",
-          "if": "node.tone.value == \"friendly\""
+          "if": "node.tone.value == \u0022friendly\u0022"
         },
         {
           "id": "followup",

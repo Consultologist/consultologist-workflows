@@ -1,7 +1,7 @@
 {
   "name": "general",
-  "version": "v2026.10.2",
-  "specVersion": 26,
+  "version": "v2026.10.3",
+  "specVersion": 27,
   "tags": [],
   "derivedFrom": null,
   "templating": {

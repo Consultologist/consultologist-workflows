@@ -1,7 +1,7 @@
 {
   "name": "example-conditional-documents",
-  "version": "v2026.10.2",
-  "specVersion": 26,
+  "version": "v2026.10.3",
+  "specVersion": 27,
   "derivedFrom": null,
   "templating": {
     "engine": "scriban",
@@ -39,7 +39,7 @@
   "nodes": [
     {
       "id": "sections_consult_note_section",
-      "label": "Sections — drafting the consultation note",
+      "label": "Sections \u2014 drafting the consultation note",
       "for": "item in snippet.sections",
       "nodes": [
         "consult_note_section"
@@ -54,7 +54,7 @@
     },
     {
       "id": "sections_progress_note_section",
-      "label": "Sections — drafting the progress note",
+      "label": "Sections \u2014 drafting the progress note",
       "for": "item in snippet.sections",
       "nodes": [
         "progress_note_section"
@@ -76,7 +76,7 @@
       "sources": [
         "node.sections_consult_note_section"
       ],
-      "if": "input.encounter_kind == \"new_patient\""
+      "if": "input.encounter_kind == \u0022new_patient\u0022"
     },
     {
       "id": "progress_note",
@@ -84,7 +84,7 @@
       "sources": [
         "node.sections_progress_note_section"
       ],
-      "if": "input.encounter_kind == \"follow_up\""
+      "if": "input.encounter_kind == \u0022follow_up\u0022"
     }
   ],
   "snippets": {
