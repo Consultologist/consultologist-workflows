@@ -1,10 +1,10 @@
 {
   "name": "example-classifier-scope",
-  "version": "v2026.10.3",
-  "specVersion": 26,
+  "version": "v2026.10.4",
+  "specVersion": 27,
   "derivedFrom": null,
   "title": "Scope classifier demo",
-  "description": "A demonstration of what specVersion 10 opened: a classifier reads the referral and answers in_scope, out_of_scope or needs_information; the package then produces a plan, a decline letter or a request for further information — one document, decided at the boundary rather than asked at intake. Not intended for clinical use.",
+  "description": "A demonstration of what specVersion 10 opened: a classifier reads the referral and answers in_scope, out_of_scope or needs_information; the package then produces a plan, a decline letter or a request for further information \u2014 one document, decided at the boundary rather than asked at intake. Not intended for clinical use.",
   "tags": [
     "demo",
     "classifier"
@@ -55,7 +55,7 @@
     },
     {
       "id": "letter_decline_letter",
-      "label": "Letter — drafting the decline letter",
+      "label": "Letter \u2014 drafting the decline letter",
       "for": "item in snippet.letter",
       "nodes": [
         "decline_letter"
@@ -70,7 +70,7 @@
     },
     {
       "id": "letter_information_request",
-      "label": "Letter — drafting the request for information",
+      "label": "Letter \u2014 drafting the request for information",
       "for": "item in snippet.letter",
       "nodes": [
         "information_request"
@@ -91,7 +91,7 @@
       "sources": [
         "node.plan_sections"
       ],
-      "if": "node.scope.value == \"in_scope\""
+      "if": "node.scope.value == \u0022in_scope\u0022"
     },
     {
       "id": "decline_letter",
@@ -106,7 +106,7 @@
       "sources": [
         "node.letter_decline_letter"
       ],
-      "if": "node.scope.value == \"out_of_scope\""
+      "if": "node.scope.value == \u0022out_of_scope\u0022"
     },
     {
       "id": "information_request",
@@ -114,7 +114,7 @@
       "sources": [
         "node.letter_information_request"
       ],
-      "if": "node.scope.value == \"needs_information\""
+      "if": "node.scope.value == \u0022needs_information\u0022"
     }
   ],
   "snippets": {
