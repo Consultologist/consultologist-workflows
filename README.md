@@ -109,11 +109,9 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
   flow node inside a `for`, `item.value.<field>` as a case subject), so the
   library's `WorkflowPackageVersionRaise` moves `specVersion` and every file
   stays. The write touches `manifest.json` and `dag.mmd` alone and does not
-  bump the CalVer; bump `version` by hand, re-run the validator, tag. Until
-  Consultologist-Blazor#1244 lands, the runner's `dag.mmd` omits the template
-  reads — regenerate it with the validator's `--dag` command above (for a
-  raise it comes back unchanged, so `git checkout` of the committed one is the
-  same thing):
+  bump the CalVer; bump `version` by hand, re-run the validator, tag. The
+  runner draws `dag.mmd` as `--dag` draws it, reads included
+  (Consultologist-Blazor#1244); for a raise it comes back unchanged:
 
   ```
   dotnet run -v q --file scripts/migrate-workflow-package.cs -- <package-dir> --to 27
