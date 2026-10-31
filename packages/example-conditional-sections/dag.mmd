@@ -44,14 +44,14 @@ flowchart TD
     subgraph if_narrative_only_then["narrative_only: then"]
         patient_summary["patient_summary<br/>Writing the patient-facing line"]
     end
-    narrative_only["narrative_only<br/>Narrative sections only<br/>if item.value.kind == "narrative""]
+    narrative_only["narrative_only<br/>Narrative sections only<br/>if item.value.kind == #quot;narrative#quot;"]
     patient_summary -->|"ret (then)"| narrative_only
     input_consult_draft --> patient_summary
 
     subgraph if_applies_then["applies: then"]
         standing_draft["standing_draft<br/>Tailoring a standing section"]
     end
-    applies["applies<br/>Holding the billing section back unless asked<br/>if item.id != "billing" || input.include_billing == true"]
+    applies["applies<br/>Holding the billing section back unless asked<br/>if item.id != #quot;billing#quot; || input.include_billing == true"]
     standing_draft -->|"ret (then)"| applies
     input_consult_draft --> standing_draft
     input_include_billing -.->|"if"| applies
