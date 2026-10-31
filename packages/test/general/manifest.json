@@ -1,7 +1,7 @@
 {
   "name": "test/general",
-  "version": "v2026.10.12",
-  "specVersion": 26,
+  "version": "v2026.10.13",
+  "specVersion": 27,
   "templating": {
     "engine": "scriban",
     "engineVersion": "7.2.5"
