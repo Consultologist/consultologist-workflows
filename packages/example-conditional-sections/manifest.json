@@ -1,13 +1,13 @@
 {
   "name": "example-conditional-sections",
-  "version": "v2026.10.1",
-  "specVersion": 27,
+  "version": "v2026.11.1",
+  "specVersion": 28,
   "derivedFrom": null,
   "templating": {
     "engine": "scriban",
     "engineVersion": "7.2.5"
   },
-  "description": "A demonstration of what specVersion 27 opened — a flow node inside a for: a case on each section's kind drafts narrative sections as prose and table sections as a table and skips the rest, an if with no else writes a patient-facing line for the narrative sections alone, and an if over a folder of standing sections holds the billing section back unless asked. Not intended for clinical use.",
+  "description": "A demonstration of what specVersion 27 opened \u2014 a flow node inside a for: a case on each section\u0027s kind drafts narrative sections as prose and table sections as a table and skips the rest, an if with no else writes a patient-facing line for the narrative sections alone, and an if over a folder of standing sections holds the billing section back unless asked. Not intended for clinical use.",
   "inputs": [
     {
       "id": "consult_draft",
@@ -56,7 +56,7 @@
   "nodes": [
     {
       "id": "sections_draft",
-      "label": "Sections — drafting each requested section by its kind",
+      "label": "Sections \u2014 drafting each requested section by its kind",
       "for": "item in input.sections",
       "nodes": [
         "route"
@@ -91,18 +91,16 @@
     {
       "id": "narrative_draft",
       "label": "Drafting a narrative section",
-      "prompt": "prompts/narrative-section.md",
       "format": "prose"
     },
     {
       "id": "table_draft",
       "label": "Drafting a table section",
-      "prompt": "prompts/table-section.md",
       "format": "prose"
     },
     {
       "id": "patient_summaries",
-      "label": "Sections — one patient-facing line per narrative section",
+      "label": "Sections \u2014 one patient-facing line per narrative section",
       "for": "item in input.sections",
       "nodes": [
         "narrative_only"
@@ -112,7 +110,7 @@
     {
       "id": "narrative_only",
       "label": "Narrative sections only",
-      "if": "item.value.kind == \"narrative\"",
+      "if": "item.value.kind == \u0022narrative\u0022",
       "then": {
         "nodes": [
           "patient_summary"
@@ -123,12 +121,11 @@
     {
       "id": "patient_summary",
       "label": "Writing the patient-facing line",
-      "prompt": "prompts/patient-summary.md",
       "format": "prose"
     },
     {
       "id": "standing_sections",
-      "label": "Standing sections — tailored to this consult",
+      "label": "Standing sections \u2014 tailored to this consult",
       "for": "item in snippet.sections",
       "nodes": [
         "applies"
@@ -138,7 +135,7 @@
     {
       "id": "applies",
       "label": "Holding the billing section back unless asked",
-      "if": "item.id != \"billing\" || input.include_billing == true",
+      "if": "item.id != \u0022billing\u0022 || input.include_billing == true",
       "then": {
         "nodes": [
           "standing_draft"
@@ -149,13 +146,11 @@
     {
       "id": "standing_draft",
       "label": "Tailoring a standing section",
-      "prompt": "prompts/standing-section.md",
       "format": "prose"
     },
     {
       "id": "coverage",
       "label": "Naming the sections left out",
-      "prompt": "prompts/coverage.md",
       "format": "prose"
     }
   ],
@@ -178,7 +173,7 @@
       ]
     }
   ],
-  "snippets": {
-    "sections": "snippets/sections/"
-  }
+  "snippets": [
+    "sections/"
+  ]
 }

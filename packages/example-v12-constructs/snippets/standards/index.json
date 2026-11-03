@@ -1,10 +1,6 @@
-[
-  {
-    "id": "hpi",
-    "file": "hpi.md"
-  },
-  {
-    "id": "pmh",
-    "file": "pmh.md"
-  }
-]
+{
+  "items": [
+    "hpi",
+    "pmh"
+  ]
+}

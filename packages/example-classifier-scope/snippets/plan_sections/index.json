@@ -1,10 +1,6 @@
-[
-  {
-    "id": "assessment",
-    "file": "assessment.md"
-  },
-  {
-    "id": "plan",
-    "file": "plan.md"
-  }
-]
+{
+  "items": [
+    "assessment",
+    "plan"
+  ]
+}

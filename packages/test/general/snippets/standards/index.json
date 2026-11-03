@@ -1,38 +1,13 @@
-[
-  {
-    "id": "hpi",
-    "file": "hpi.md"
-  },
-  {
-    "id": "pmh",
-    "file": "pmh.md"
-  },
-  {
-    "id": "medications",
-    "file": "medications.md"
-  },
-  {
-    "id": "allergies",
-    "file": "allergies.md"
-  },
-  {
-    "id": "social_history",
-    "file": "social_history.md"
-  },
-  {
-    "id": "family_history",
-    "file": "family_history.md"
-  },
-  {
-    "id": "exam",
-    "file": "exam.md"
-  },
-  {
-    "id": "investigations",
-    "file": "investigations.md"
-  },
-  {
-    "id": "assessment_plan",
-    "file": "assessment_plan.md"
-  }
-]
+{
+  "items": [
+    "hpi",
+    "pmh",
+    "medications",
+    "allergies",
+    "social_history",
+    "family_history",
+    "exam",
+    "investigations",
+    "assessment_plan"
+  ]
+}

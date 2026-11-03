@@ -1,7 +1,7 @@
 {
   "name": "example-conditional-documents",
-  "version": "v2026.10.3",
-  "specVersion": 27,
+  "version": "v2026.11.1",
+  "specVersion": 28,
   "derivedFrom": null,
   "templating": {
     "engine": "scriban",
@@ -49,7 +49,6 @@
     {
       "id": "consult_note_section",
       "label": "Drafting the consultation note",
-      "prompt": "prompts/consult-note-section.md",
       "format": "prose"
     },
     {
@@ -64,7 +63,6 @@
     {
       "id": "progress_note_section",
       "label": "Drafting the progress note",
-      "prompt": "prompts/progress-note-section.md",
       "format": "prose"
     }
   ],
@@ -87,7 +85,7 @@
       "if": "input.encounter_kind == \u0022follow_up\u0022"
     }
   ],
-  "snippets": {
-    "sections": "snippets/sections/"
-  }
+  "snippets": [
+    "sections/"
+  ]
 }

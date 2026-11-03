@@ -1,14 +1,7 @@
-[
-  {
-    "id": "hpi",
-    "file": "hpi.md"
-  },
-  {
-    "id": "medications",
-    "file": "medications.md"
-  },
-  {
-    "id": "assessment_plan",
-    "file": "assessment_plan.md"
-  }
-]
+{
+  "items": [
+    "hpi",
+    "medications",
+    "assessment_plan"
+  ]
+}

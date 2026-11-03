@@ -1,7 +1,7 @@
 {
   "name": "example-classifier-scope",
-  "version": "v2026.10.4",
-  "specVersion": 27,
+  "version": "v2026.11.1",
+  "specVersion": 28,
   "derivedFrom": null,
   "title": "Scope classifier demo",
   "description": "A demonstration of what specVersion 10 opened: a classifier reads the referral and answers in_scope, out_of_scope or needs_information; the package then produces a plan, a decline letter or a request for further information \u2014 one document, decided at the boundary rather than asked at intake. Not intended for clinical use.",
@@ -20,14 +20,13 @@
       "required": true
     }
   ],
-  "macros": {
-    "closing": "macros/closing.md"
-  },
+  "macros": [
+    "closing"
+  ],
   "nodes": [
     {
       "id": "scope",
       "label": "Is the referral in scope?",
-      "prompt": "prompts/classify-scope.md",
       "format": "classification",
       "with": {
         "values": [
@@ -50,7 +49,6 @@
     {
       "id": "plan_section",
       "label": "Drafting the plan",
-      "prompt": "prompts/plan-section.md",
       "format": "prose"
     },
     {
@@ -65,7 +63,6 @@
     {
       "id": "decline_letter",
       "label": "Drafting the decline letter",
-      "prompt": "prompts/decline-letter.md",
       "format": "prose"
     },
     {
@@ -80,7 +77,6 @@
     {
       "id": "information_request",
       "label": "Drafting the request for information",
-      "prompt": "prompts/information-request.md",
       "format": "prose"
     }
   ],
@@ -117,8 +113,8 @@
       "if": "node.scope.value == \u0022needs_information\u0022"
     }
   ],
-  "snippets": {
-    "letter": "snippets/letter/",
-    "plan_sections": "snippets/plan_sections/"
-  }
+  "snippets": [
+    "letter/",
+    "plan_sections/"
+  ]
 }

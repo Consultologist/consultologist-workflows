@@ -1,13 +1,13 @@
 {
   "name": "example-macros-warnings",
-  "version": "v2026.10.1",
-  "specVersion": 27,
+  "version": "v2026.11.1",
+  "specVersion": 28,
   "derivedFrom": null,
   "templating": {
     "engine": "scriban",
     "engineVersion": "7.2.5"
   },
-  "description": "The example-macros package carrying the three states a published package can show only as validator warnings — an instruction that reads its own macro's .content, a text case branch on an undeclared value, and a text test that is always true. Otherwise identical to example-macros. Not intended for clinical use.",
+  "description": "The example-macros package carrying the three states a published package can show only as validator warnings \u2014 an instruction that reads its own macro\u0027s .content, a text case branch on an undeclared value, and a text test that is always true. Otherwise identical to example-macros. Not intended for clinical use.",
   "inputs": [
     {
       "id": "consult_draft",
@@ -61,7 +61,7 @@
   "nodes": [
     {
       "id": "standing_sections",
-      "label": "Standing sections — tailored to this consult",
+      "label": "Standing sections \u2014 tailored to this consult",
       "for": "item in snippet.sections",
       "nodes": [
         "standing_draft"
@@ -71,19 +71,18 @@
     {
       "id": "standing_draft",
       "label": "Tailoring a standing section",
-      "prompt": "prompts/standing-section.md",
       "format": "prose",
       "macros": [
         {
           "id": "counselling",
           "at": "after",
-          "if": "item.id == \"assessment_plan\""
+          "if": "item.id == \u0022assessment_plan\u0022"
         }
       ]
     },
     {
       "id": "requested_sections",
-      "label": "Requested sections — drafting each by its kind",
+      "label": "Requested sections \u2014 drafting each by its kind",
       "for": "item in input.sections",
       "nodes": [
         "route"
@@ -118,20 +117,18 @@
     {
       "id": "narrative_draft",
       "label": "Drafting a narrative section",
-      "prompt": "prompts/narrative-section.md",
       "format": "prose",
       "macros": [
         {
           "id": "section_caveat",
           "at": "after",
-          "if": "input.note_type == \"consult\""
+          "if": "input.note_type == \u0022consult\u0022"
         }
       ]
     },
     {
       "id": "table_draft",
       "label": "Drafting a table section",
-      "prompt": "prompts/table-section.md",
       "format": "prose",
       "macros": [
         {
@@ -143,7 +140,6 @@
     {
       "id": "summary",
       "label": "Closing summary",
-      "prompt": "prompts/summary.md",
       "format": "prose",
       "macros": [
         {
@@ -159,30 +155,29 @@
     {
       "id": "patient_line",
       "label": "One line for the patient",
-      "prompt": "prompts/patient-line.md",
       "format": "prose"
     }
   ],
   "tags": [],
-  "macros": {
-    "counselling": "macros/counselling.md",
-    "house_style": "macros/house_style.md",
-    "silent_reminder": "macros/silent_reminder.md",
-    "section_caveat": "macros/section_caveat.md",
-    "table_note": "macros/table_note.md",
-    "preamble": "macros/preamble.md",
-    "sign_off": "macros/sign_off.md",
-    "wrap_up": "macros/wrap_up.md",
-    "boilerplate": "macros/boilerplate.md",
-    "header_line": "macros/header_line.md",
-    "closing": "macros/closing.md",
-    "kept_note": "macros/kept_note.md",
-    "followup_only": "macros/followup_only.md",
-    "brief_plan": "macros/brief_plan.md",
-    "follow_up_reminder": "macros/follow_up_reminder.md",
-    "self_read": "macros/self_read.md",
-    "notes": "macros/notes/"
-  },
+  "macros": [
+    "counselling",
+    "house_style",
+    "silent_reminder",
+    "section_caveat",
+    "table_note",
+    "preamble",
+    "sign_off",
+    "wrap_up",
+    "boilerplate",
+    "header_line",
+    "closing",
+    "kept_note",
+    "followup_only",
+    "brief_plan",
+    "follow_up_reminder",
+    "self_read",
+    "notes/"
+  ],
   "deliverables": [
     {
       "id": "consult_note",
@@ -196,7 +191,7 @@
         {
           "id": "header_line",
           "at": "prepend",
-          "if": "input.note_type != \"discharge_summary\""
+          "if": "input.note_type != \u0022discharge_summary\u0022"
         },
         {
           "id": "closing",
@@ -209,7 +204,7 @@
         {
           "id": "followup_only",
           "at": "append",
-          "if": "input.note_type == \"follow_up\""
+          "if": "input.note_type == \u0022follow_up\u0022"
         },
         {
           "id": "brief_plan",
@@ -229,8 +224,8 @@
       ]
     }
   ],
-  "snippets": {
-    "sections": "snippets/sections/",
-    "style": "snippets/style.md"
-  }
+  "snippets": [
+    "sections/",
+    "style"
+  ]
 }
