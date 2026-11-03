@@ -1,7 +1,7 @@
 {
   "name": "general",
-  "version": "v2026.10.3",
-  "specVersion": 27,
+  "version": "v2026.11.1",
+  "specVersion": 28,
   "tags": [],
   "derivedFrom": null,
   "templating": {
@@ -19,7 +19,6 @@
     {
       "id": "extract_patient_concepts",
       "label": "Extracting clinical concepts",
-      "prompt": "prompts/extract-patient-concepts.md",
       "format": "concept_list",
       "onInvalid": "fail",
       "failIfEmpty": "The consult could not be processed because clinical concepts could not be extracted from the draft."
@@ -27,7 +26,6 @@
     {
       "id": "identify_problem",
       "label": "Identifying primary problem",
-      "prompt": "prompts/identify-problem.md",
       "format": "concept_list",
       "onInvalid": "fail",
       "failIfEmpty": "No valid disease or problem concept was identified."
@@ -35,7 +33,6 @@
     {
       "id": "create_typical_trajectory",
       "label": "Building reference trajectory",
-      "prompt": "prompts/create-typical-trajectory.md",
       "format": "concept_list",
       "onInvalid": "fail",
       "failIfEmpty": "No valid typical trajectory concepts were generated."
@@ -43,7 +40,6 @@
     {
       "id": "create_patient_trajectory",
       "label": "Building patient trajectory",
-      "prompt": "prompts/create-patient-trajectory.md",
       "format": "concept_list",
       "onInvalid": "fail",
       "failIfEmpty": "No valid patient trajectory concepts were generated."
@@ -51,13 +47,11 @@
     {
       "id": "standard_section_draft",
       "label": "Drafting section",
-      "prompt": "prompts/standard-section-draft.md",
       "format": "prose"
     },
     {
       "id": "patient_section_draft",
       "label": "Applying patient information",
-      "prompt": "prompts/patient-section-draft.md",
       "format": "prose"
     },
     {
@@ -74,7 +68,6 @@
     {
       "id": "section_instructions",
       "label": "Applying section instructions",
-      "prompt": "prompts/section-instructions.md",
       "format": "prose"
     }
   ],
@@ -87,8 +80,8 @@
       ]
     }
   ],
-  "snippets": {
-    "snomed_tool_guidance": "snippets/snomed_tool_guidance.md",
-    "standards": "snippets/standards/"
-  }
+  "snippets": [
+    "snomed_tool_guidance",
+    "standards/"
+  ]
 }

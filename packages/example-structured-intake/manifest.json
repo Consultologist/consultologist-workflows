@@ -1,7 +1,7 @@
 {
   "name": "example-structured-intake",
-  "version": "v2026.10.3",
-  "specVersion": 27,
+  "version": "v2026.11.1",
+  "specVersion": 28,
   "derivedFrom": null,
   "title": "Structured intake demo",
   "description": "A demonstration of what specVersion 9 opened: an array of prior notes fanned per element (leave it empty to see the empty-fan refusal), a patient object read by path, a number driving an ordering comparison, and a deliverable gated on count(). Not intended for clinical use.",
@@ -69,7 +69,6 @@
     {
       "id": "note_section",
       "label": "Drafting the note",
-      "prompt": "prompts/note-section.md",
       "format": "prose"
     },
     {
@@ -84,7 +83,6 @@
     {
       "id": "senior_review_section",
       "label": "Drafting the senior review request",
-      "prompt": "prompts/senior-review-section.md",
       "format": "prose"
     },
     {
@@ -99,7 +97,6 @@
     {
       "id": "long_stay_section",
       "label": "Drafting the long-stay summary",
-      "prompt": "prompts/long-stay-section.md",
       "format": "prose"
     },
     {
@@ -114,7 +111,6 @@
     {
       "id": "summarise_note",
       "label": "Summarising a prior note",
-      "prompt": "prompts/summarise-note.md",
       "format": "prose"
     },
     {
@@ -129,7 +125,6 @@
     {
       "id": "index_note",
       "label": "Indexing a prior note",
-      "prompt": "prompts/index-note.md",
       "format": "prose"
     }
   ],
@@ -173,7 +168,7 @@
       "if": "(input.prior_notes | array.size) \u003E 2"
     }
   ],
-  "snippets": {
-    "sections": "snippets/sections/"
-  }
+  "snippets": [
+    "sections/"
+  ]
 }

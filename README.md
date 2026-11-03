@@ -9,14 +9,14 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
 | Package | What it is |
 |---|---|
 | `general` | The production consult workflow: one input, one assembled note. |
-| `test/general` | The `general` workflow as the editor evolves it, at the newest format (specVersion 27): a nested name (`packages/test/general`), the SNOMED tool guidance read inline as a **snippet** by the four concept prompts (a migrated prelude), the letrozole counselling instruction read inline through the `assessment_plan` standards item (`{{ macro.letrozole_prescription_text.prompt }}`), and one macro appended to the note. A proving ground for the current format, not a clinical release. |
+| `test/general` | The `general` workflow as the editor evolves it, at the newest format (specVersion 28): a nested name (`packages/test/general`), the SNOMED tool guidance read inline as a **snippet** by the four concept prompts (a migrated prelude), the letrozole counselling instruction read inline through the `assessment_plan` standards item (`{{ macro.letrozole_prescription_text.prompt }}`), and one macro appended to the note. A proving ground for the current format, not a clinical release. |
 | `example-two-documents` | A demonstration of what specVersion 7 opened — two declared inputs (one optional) and two deliverables. Not intended for clinical use. |
 | `example-conditional-documents` | A demonstration of what specVersion 8 opened — a typed date, an enum, a boolean, and two deliverables firing on different values of one *optional* enum, so leaving it unanswered produces nothing and the job is refused at start. Not intended for clinical use. |
 | `example-structured-intake` | A demonstration of what specVersion 9 opened — an array of prior notes fanned per element, a patient object read by path (`patient.age >= 65`), a number driving an ordering comparison, an unconditional digest written only from the notes, and an index gated on `count()`. The fanned input is *optional* on purpose: leaving it empty shows the empty-fan refusal and the Failed job record it leaves — the digest has nothing to be written from. Not intended for clinical use. |
 | `example-classifier-scope` | A demonstration of what specVersion 10 opened — a classifier node reads the referral and answers `in_scope`, `out_of_scope` or `needs_information`; three deliverables each fire on one answer (`node:scope == in_scope` …), so the package decides what to produce at the boundary rather than asking at intake. A plan fanned over two sections, or a one-section letter. Not intended for clinical use. |
 | `example-v12-constructs` | A demonstration of everything specVersion 12 opened — an optional macro with a declared default the run may choose, a macro placed against a section, a closing macro carrying `{{profile:signature}}`, conditional macros gated on a tone classifier (match/case as declarations), a template node whose render IS its output, and two checks: the note's passes against its own extraction, the letter's fixed template text records a deterministic failure. Not intended for clinical use. |
 | `example-conditional-sections` | A demonstration of what specVersion 27 opened — a flow node inside a `for`. Three loops: a `case` on each requested section's kind (an `array<object>` input) drafts narrative sections as prose and table sections as a table and skips an `omit` section by condition; an `if` with no `else` writes one patient-facing line for the narrative sections alone; an `if` over a folder of standing sections holds the billing section back unless `include_billing` is set. A closing node reads the loop's elements (`e.skipped`) to name what was left out; the record (storage 9) names every skipped item and its reason. Not intended for clinical use. |
-| `example-macros` | A demonstration of every state the Editor's macro pane can show, on one specVersion 27 package — a macro's own `if` (a clause, and a grouped and/or), instances placed before and after a node and on loop body nodes with item gates (a snippet-folder loop and an array-input loop with a `case`), prepend and append on a deliverable with gates, inline reads through a prompt, a snippet and another macro's instruction, a `.content` text read, a macro folder, an optional macro with a default, and the desk notes: never fires, unread, empty prompt. Validates with no warnings. Not intended for clinical use. |
+| `example-macros` | A demonstration of every state the Editor's macro pane can show, on one specVersion 28 package — a macro's own `if` (a clause, and a grouped and/or), instances placed before and after a node and on loop body nodes with item gates (a snippet-folder loop and an array-input loop with a `case`), prepend and append on a deliverable with gates, inline reads through a prompt, a snippet and another macro's instruction, a `.content` text read, a macro folder, an optional macro with a default, and the desk notes: never fires, unread, empty prompt. Validates with no warnings. Not intended for clinical use. |
 | `example-macros-warnings` | `example-macros` carrying the three states a published package can show only as validator warnings — an instruction that reads its own macro's `.content`, a text `case` branch on an undeclared value, and a text test that is always true. Otherwise identical to `example-macros`; the registry publishes with warnings and refuses errors, so this is the package to open when you want to see the Editor and CI carry them. Not intended for clinical use. |
 
 ## Contract
@@ -117,6 +117,26 @@ repo (Consultologist-Blazor) on 2026-07-23; design in its
   dotnet run -v q --file scripts/migrate-workflow-package.cs -- <package-dir> --to 27
   dotnet run -v q --file scripts/migrate-workflow-package.cs -- <package-dir> --to 27 --write
   ```
+- **Moving a 27 package to specVersion 28** is the runner's fourth stage
+  (`--to 28`): a file's name becomes its id (Consultologist-Blazor#1268).
+  The library's `WorkflowPackageMigration27To28` renames every prompt, macro,
+  snippet and folder item to the path its id implies (`prompts/<node id>.md`,
+  `macros/<id>.md`, `snippets/<id>.md`, `<folder>/<item id>.md`), copying a
+  prompt several nodes shared to each node. The manifest drops every `prompt`,
+  `macros` and `snippets` become lists of ids (`["closing", "notes/"]`), and
+  each folder's `index.json` becomes `{ "items": [...] }` in its 27 order,
+  with no `label` invented. The dry run prints the delete/add/rewrite plan and
+  validates at 28 before anything is written. It does not bump the CalVer:
+  bump `version` by hand, re-run the validator, tag.
+
+  ```
+  dotnet run -v q --file scripts/migrate-workflow-package.cs -- <package-dir> --to 28
+  dotnet run -v q --file scripts/migrate-workflow-package.cs -- <package-dir> --to 28 --write
+  ```
+
+  At 28 a file under `prompts/`, `macros/` or `snippets/` that names nothing
+  is a warning, not a refusal; the structural check here reads the id lists and
+  the index object, and leaves implied prompts to the engine step.
 
 ## Publishing (CI-only)
 

@@ -1,14 +1,7 @@
-[
-  {
-    "id": "safety_netting",
-    "file": "safety-netting.md"
-  },
-  {
-    "id": "follow_up",
-    "file": "follow-up.md"
-  },
-  {
-    "id": "billing",
-    "file": "billing.md"
-  }
-]
+{
+  "items": [
+    "safety_netting",
+    "follow_up",
+    "billing"
+  ]
+}

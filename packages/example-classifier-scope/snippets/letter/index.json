@@ -1,6 +1,5 @@
-[
-  {
-    "id": "letter",
-    "file": "letter.md"
-  }
-]
+{
+  "items": [
+    "letter"
+  ]
+}
