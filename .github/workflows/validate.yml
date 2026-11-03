@@ -75,19 +75,33 @@ jobs:
               if not os.path.exists(os.path.join(d, f)): missing.append(f)
           for f in (m.get("schemas") or {}).values():
               if not os.path.exists(os.path.join(d, f)): missing.append(f)
-          # A folder's index: the v26 ordered list [{ id, file }], or the ≤25 { items: [...] }.
+          # A folder's index: the v26 ordered list [{ id, file }], the ≤25 { items: [...] }, or
+          # (package-format v28) the object { label?, items: [ids] } — each item <id>.md beside it.
           def folder_items(index):
               return index if isinstance(index, list) else index.get("items", [])
+          def item_file(item):
+              return item + ".md" if isinstance(item, str) else item.get("file")
           def check_folder(val):
               idx = os.path.join(d, val, "index.json")
               assert os.path.exists(idx), f"missing {val}index.json"
               for item in folder_items(json.load(open(idx))):
-                  if "file" in item and not os.path.exists(os.path.join(d, val, item["file"])):
-                      missing.append(val + item["file"])
+                  f = item_file(item)
+                  if f and not os.path.exists(os.path.join(d, val, f)):
+                      missing.append(val + f)
+          # package-format v28: macros and snippets may be lists of ids — "x" is <kind>/x.md,
+          # "x/" the folder <kind>/x/; at 26 and 27 a map of id to path. A 28 node names no
+          # prompt (its file is prompts/<id>.md); the engine step judges implied prompts.
+          def table_paths(table, kind):
+              if isinstance(table, dict):
+                  return list(table.values())
+              return [f"{kind}/{e}" if e.endswith("/") else f"{kind}/{e}.md" for e in table if isinstance(e, str)]
           # macros: a list of { id, file } up to v25; at v26 a map of id to file (or "<dir>/" — a
           # folder of macro items, indexed like a snippet folder).
           macros = m.get("macros") or []
-          macro_files = macros.values() if isinstance(macros, dict) else [macro["file"] for macro in macros]
+          if isinstance(macros, list) and all(isinstance(e, str) for e in macros):
+              macro_files = table_paths(macros, "macros")
+          else:
+              macro_files = macros.values() if isinstance(macros, dict) else [macro["file"] for macro in macros]
           for val in macro_files:
               if val.endswith("/"):
                   check_folder(val)
@@ -97,7 +111,9 @@ jobs:
           # (the same shape: a folder key ends in / and holds index.json + item files).
           for fmt in m.get("formats") or []:
               if not os.path.exists(os.path.join(d, fmt["file"])): missing.append(fmt["file"])
-          for key, val in {**(m.get("data") or {}), **(m.get("snippets") or {})}.items():
+          snippets = m.get("snippets") or {}
+          snippet_paths = table_paths(snippets, "snippets") if isinstance(snippets, list) else list(snippets.values())
+          for val in list((m.get("data") or {}).values()) + snippet_paths:
               if val.endswith("/"):
                   check_folder(val)
               elif not os.path.exists(os.path.join(d, val)):
