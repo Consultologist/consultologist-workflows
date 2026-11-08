@@ -1,7 +1,7 @@
 {
   "name": "example-conditional-documents",
-  "version": "v2026.11.1",
-  "specVersion": 28,
+  "version": "v2026.11.2",
+  "specVersion": 29,
   "derivedFrom": null,
   "templating": {
     "engine": "scriban",

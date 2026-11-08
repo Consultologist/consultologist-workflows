@@ -1,7 +1,7 @@
 {
   "name": "example-structured-intake",
-  "version": "v2026.11.1",
-  "specVersion": 28,
+  "version": "v2026.11.2",
+  "specVersion": 29,
   "derivedFrom": null,
   "title": "Structured intake demo",
   "description": "A demonstration of what specVersion 9 opened: an array of prior notes fanned per element (leave it empty to see the empty-fan refusal), a patient object read by path, a number driving an ordering comparison, and a deliverable gated on count(). Not intended for clinical use.",

@@ -1,7 +1,7 @@
 {
   "name": "example-two-documents",
-  "version": "v2026.11.1",
-  "specVersion": 28,
+  "version": "v2026.11.2",
+  "specVersion": 29,
   "derivedFrom": "general@v2026.07.9",
   "templating": {
     "engine": "scriban",
