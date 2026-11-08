@@ -1,7 +1,7 @@
 {
   "name": "example-v12-constructs",
-  "version": "v2026.11.1",
-  "specVersion": 28,
+  "version": "v2026.11.2",
+  "specVersion": 29,
   "derivedFrom": null,
   "title": "The v12 constructs demo",
   "description": "A demonstration of everything specVersion 12 opened: an optional macro the run chooses (with a declared default), a macro placed against a section, a closing macro carrying the profile signature, conditional macros gated on a tone classifier, a template node whose render IS its output, and two checks \u2014 the note\u0027s passes, while the letter\u0027s fixed template text cannot cover the referral\u0027s clinical terms and records a deterministic failure. Not intended for clinical use.",
