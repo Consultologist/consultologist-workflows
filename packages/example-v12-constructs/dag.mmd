@@ -38,24 +38,24 @@ flowchart TD
     extract_input_terms -->|"value"| letter_coverage
     extract_letter_terms -->|"value"| letter_coverage
 
-    snippet_standards -->|"for"| for_standards_section_instructions
     subgraph for_standards_section_instructions["standards_section_instructions: per snippet.standards item"]
         section_instructions["section_instructions<br/>Applying section instructions"]
         patient_section_draft["patient_section_draft<br/>Applying patient information"]
         standard_section_draft["standard_section_draft<br/>Drafting section"]
-        patient_section_draft -->|"content"| section_instructions
-        standard_section_draft -->|"content"| patient_section_draft
     end
     standards_section_instructions["standards_section_instructions<br/>Standards — applying section instructions<br/>item in snippet.standards"]
-    section_instructions -->|"ret"| standards_section_instructions
-    input_consult_draft --> patient_section_draft
-    create_patient_trajectory -->|"content"| standard_section_draft
 
-    snippet_standards -->|"for"| for_standards_letter_body
     subgraph for_standards_letter_body["standards_letter_body: per snippet.standards item"]
         letter_body["letter_body<br/>Acknowledgement body"]
     end
     standards_letter_body["standards_letter_body<br/>Standards — acknowledgement body<br/>item in snippet.standards"]
+    patient_section_draft -->|"content"| section_instructions
+    standard_section_draft -->|"content"| patient_section_draft
+    input_consult_draft --> patient_section_draft
+    create_patient_trajectory -->|"content"| standard_section_draft
+    snippet_standards -->|"for"| for_standards_section_instructions
+    section_instructions -->|"ret"| standards_section_instructions
+    snippet_standards -->|"for"| for_standards_letter_body
     letter_body -->|"ret"| standards_letter_body
 
     result_consult{{"consult<br/>Consultation note"}}
