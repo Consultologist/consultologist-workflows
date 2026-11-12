@@ -23,22 +23,22 @@ flowchart TD
     input_consult_specialty --> create_patient_trajectory
     snippet_snomed_tool_guidance --> create_patient_trajectory
 
-    snippet_standards -->|"for"| for_standards
     subgraph for_standards["standards: per snippet.standards item"]
         section_instructions["section_instructions<br/>Applying section instructions"]
         patient_section_draft["patient_section_draft<br/>Applying patient information"]
         standard_section_draft["standard_section_draft<br/>Drafting section"]
-        patient_section_draft -->|"content"| section_instructions
-        standard_section_draft -->|"content"| patient_section_draft
     end
     standards["standards<br/>Standards<br/>item in snippet.standards"]
-    section_instructions -->|"ret"| standards
+    patient_section_draft -->|"content"| section_instructions
     input_consult_specialty --> section_instructions
     input_note_type --> section_instructions
+    standard_section_draft -->|"content"| patient_section_draft
     input_consult_draft --> patient_section_draft
     create_patient_trajectory -->|"content"| standard_section_draft
     input_consult_specialty --> standard_section_draft
     input_note_type --> standard_section_draft
+    snippet_standards -->|"for"| for_standards
+    section_instructions -->|"ret"| standards
 
     result_consult{{"consult<br/>Consultation note"}}
     standards --> result_consult

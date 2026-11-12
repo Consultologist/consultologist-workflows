@@ -16,35 +16,33 @@ flowchart TD
     input_note_type --> patient_line
     input_consult_draft --> patient_line
 
-    snippet_sections -->|"for"| for_standing_sections
     subgraph for_standing_sections["standing_sections: per snippet.sections item"]
         standing_draft["standing_draft<br/>Tailoring a standing section"]
     end
     standing_sections["standing_sections<br/>Standing sections — tailored to this consult<br/>item in snippet.sections"]
-    standing_draft -->|"ret"| standing_sections
+
+    subgraph for_requested_sections["requested_sections: per input.sections item"]
+        subgraph case_route_branch_1["route: narrative"]
+            narrative_draft["narrative_draft<br/>Drafting a narrative section"]
+        end
+        subgraph case_route_branch_2["route: table"]
+            table_draft["table_draft<br/>Drafting a table section"]
+        end
+        route["route<br/>Routing a section by its kind<br/>case item.value.kind"]
+    end
+    requested_sections["requested_sections<br/>Requested sections — drafting each by its kind<br/>item in input.sections"]
     input_include_counselling --> standing_draft
     input_consult_draft --> standing_draft
     input_note_type --> standing_draft
-
-    input_sections -->|"for"| for_requested_sections
-    subgraph for_requested_sections["requested_sections: per input.sections item"]
-        route["route<br/>Routing a section by its kind"]
-    end
-    requested_sections["requested_sections<br/>Requested sections — drafting each by its kind<br/>item in input.sections"]
-    route -->|"ret"| requested_sections
-
-    subgraph case_route_branch_1["route: narrative"]
-        narrative_draft["narrative_draft<br/>Drafting a narrative section"]
-    end
-    subgraph case_route_branch_2["route: table"]
-        table_draft["table_draft<br/>Drafting a table section"]
-    end
-    route["route<br/>Routing a section by its kind<br/>case item.value.kind"]
-    narrative_draft -->|"ret (narrative)"| route
-    table_draft -->|"ret (table)"| route
+    snippet_sections -->|"for"| for_standing_sections
+    standing_draft -->|"ret"| standing_sections
     input_consult_draft --> narrative_draft
     input_note_type -.->|"if"| narrative_draft
     input_consult_draft --> table_draft
+    narrative_draft -->|"ret (narrative)"| route
+    table_draft -->|"ret (table)"| route
+    input_sections -->|"for"| for_requested_sections
+    route -->|"ret"| requested_sections
 
     result_consult_note{{"consult_note<br/>Consult note"}}
     requested_sections --> result_consult_note
