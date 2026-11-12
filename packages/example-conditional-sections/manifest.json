@@ -1,13 +1,13 @@
 {
   "name": "example-conditional-sections",
-  "version": "v2026.11.2",
-  "specVersion": 29,
+  "version": "v2026.11.3",
+  "specVersion": 30,
   "derivedFrom": null,
   "templating": {
     "engine": "scriban",
     "engineVersion": "7.2.5"
   },
-  "description": "A demonstration of what specVersion 27 opened \u2014 a flow node inside a for: a case on each section\u0027s kind drafts narrative sections as prose and table sections as a table and skips the rest, an if with no else writes a patient-facing line for the narrative sections alone, and an if over a folder of standing sections holds the billing section back unless asked. Not intended for clinical use.",
+  "description": "A demonstration of what specVersion 27 opened \u2014 a flow node inside a for: a case on each section\u0027s kind drafts narrative sections as prose and table sections as a table and skips the rest, an if with no else writes a patient-facing line for the narrative sections alone, and an if over a folder of standing sections holds the billing section back unless asked. At 30 a section is named by its title (labelField). Not intended for clinical use.",
   "inputs": [
     {
       "id": "consult_draft",
@@ -44,7 +44,8 @@
           "required": false,
           "type": "text"
         }
-      ]
+      ],
+      "labelField": "title"
     },
     {
       "id": "include_billing",
